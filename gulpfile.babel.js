@@ -5,6 +5,7 @@ import autoprefixer from "gulp-autoprefixer";
 import minifyCSS from "gulp-csso";
 import del from "del";
 import bro from "gulp-bro";
+import babelify from "babelify";
 
 // sass.compiler = require("node-sass");
 import "node-sass";
@@ -40,7 +41,12 @@ const styles = () => {
 const js = () => {
     return gulp
     .src(paths.js.src)
-    .pipe(bro())
+    .pipe(bro({
+        transform: [
+            babelify.configure({ presets: ['@babel/preset-env'] }),
+            [ 'uglifyify', { global: true } ]
+        ]
+    }))
     .pipe(gulp.dest(paths.js.dest));
 };
 

@@ -1,28 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-const body = document.querySelector("body");
-const loginForm = document.getElementById("jsLogin");
+"use strict";var body=document.querySelector("body"),loginForm=document.getElementById("jsLogin"),NICKNAME="nickname",LOGGED_OUT="loggedOut",LOGGED_IN="loggedIn",nickname=localStorage.getItem(NICKNAME),logIn=function(e){window.socket=io("/"),window.socket.emit(window.events.setNickname,{nickname:e})};body.className=null===nickname?LOGGED_OUT:LOGGED_IN;var handleFormSubmit=function(e){e.preventDefault();var n=loginForm.querySelector("input"),o=n.value;n.value="",localStorage.setItem(NICKNAME,o),body.className=LOGGED_IN,logIn(o)};loginForm&&loginForm.addEventListener("submit",handleFormSubmit);
 
-const NICKNAME = "nickname";
-const LOGGED_OUT = "loggedOut";
-const LOGGED_IN = "loggedIn";
+},{}],2:[function(require,module,exports){
+"use strict";require("./login");
 
-const nickname = localStorage.getItem(NICKNAME);
-
-if (nickname === null) {
-    body.className = LOGGED_OUT;
-} else {
-    body.className = LOGGED_IN;
-}
-
-const handleFormSubmit = e => {
-    e.preventDefault();
-    const input = loginForm.querySelector("input");
-    const { value } = input;
-    input.value = "";
-    localStorage.setItem(NICKNAME, value);
-};
-
-if (loginForm) {
-    loginForm.addEventListener("submit", handleFormSubmit);
-}
-},{}]},{},[1]);
+},{"./login":1}]},{},[2]);
