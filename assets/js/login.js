@@ -1,3 +1,5 @@
+import { initSockets } from "./sockets";
+
 const body = document.querySelector("body");
 const loginForm = document.getElementById("jsLogin");
 
@@ -8,11 +10,14 @@ const LOGGED_IN = "loggedIn";
 // Local Storage에서 닉네임 불러오기
 const nickname = localStorage.getItem(NICKNAME);
 
-// Socket에 닉네임 저장
+// 소캣에 닉네임 저장
 const logIn = (nickname) => {
-    // 소캣 생성 및 연결 (window는 전역변수를 위해 사용)
-    window.socket = io("/");
-    window.socket.emit(window.events.setNickname, { nickname });
+    // 소캣 생성 및 연결
+    const socket = io("/");
+    // 소캣에 닉네임 저장
+    socket.emit(window.events.setNickname, { nickname });
+    // 소캣 저장
+    initSockets(socket);
 };
 
 // 창 설정 (로그인 창 / 게임 창)
@@ -22,7 +27,7 @@ if (nickname === null) {
     body.className = LOGGED_IN;
 }
 
-// 로그인창 - 닉네임 이벤트 처리
+// 로그인 창 - 로그인 이벤트 처리
 const handleFormSubmit = (e) => {
     e.preventDefault();
     const input = loginForm.querySelector("input");
