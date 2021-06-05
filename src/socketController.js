@@ -1,5 +1,4 @@
 import events from "./events.js";
-import { io } from "./server.js";
 
 // 소켓 이벤트 처리
 const socketController = (socket) => {
@@ -9,6 +8,7 @@ const socketController = (socket) => {
         // 닉네임 설정
         socket.nickname = nickname;
         // 로그인 알리기
+        socket.emit(events.newUser, { nickname });
         broadcast(events.newUser, { nickname });
     });
     // 로그아웃(나)
