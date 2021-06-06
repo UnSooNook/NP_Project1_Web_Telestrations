@@ -1,3 +1,6 @@
+include mixins/loginContainer
+include mixins/mainContainer
+
 <!DOCTYPE html>
 html(lang="ko")
     head
@@ -7,13 +10,8 @@ html(lang="ko")
         link(rel="stylesheet", href="styles/styles.css")
         title Web_Telestrations
     body
-        .loginBox
-            form#jsLogin
-                input(placeholder="Whats your nickname", type="text")
-        .gameContainer#jsGame
-            h1 You are logged in
-            div#jsNotifications
-            button Logout
+        +loginContainer()
+        +mainContainer()
         script.
             window.events = !{events}
         script(src="/socket.io/socket.io.js")

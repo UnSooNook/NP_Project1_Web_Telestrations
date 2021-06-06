@@ -1,4 +1,4 @@
-import { handleNewUser, handleDisconnected } from "./notifications";
+import { handleNewUser, handleDisconnected, handleChat } from "./shootChat";
 
 let socket = null;
 
@@ -20,4 +20,6 @@ export const initSockets = (aSocket) => {
     aSocket.on(events.newUser, handleNewUser);
     // 유저 로그아웃 이벤트
     aSocket.on(events.disconnected, handleDisconnected);
+    // 채팅 이벤트
+    aSocket.on(events.receiveChat, handleChat);
 };

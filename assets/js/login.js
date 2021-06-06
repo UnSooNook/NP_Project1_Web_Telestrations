@@ -1,14 +1,10 @@
 import { initSockets } from "./sockets";
 
-const body = document.querySelector("body");
-const loginForm = document.getElementById("jsLogin");
-
+const loginContainer = document.querySelector(".login__container");
+const mainContainer = document.querySelector(".main__container");
+const loginForm = document.querySelector(".login__form");
 const NICKNAME = "nickname";
-const LOGGED_OUT = "loggedOut";
-const LOGGED_IN = "loggedIn";
-
-// Local Storage에서 닉네임 불러오기
-const nickname = localStorage.getItem(NICKNAME);
+var nickname = localStorage.getItem(NICKNAME);
 
 // 소캣에 닉네임 저장
 const logIn = (nickname) => {
@@ -20,26 +16,30 @@ const logIn = (nickname) => {
     initSockets(socket);
 };
 
-// 창 설정 (로그인 창 / 게임 창)
-if (nickname === null) {
-    body.className = LOGGED_OUT;
-} else {
-    body.className = LOGGED_IN;
-}
-
 // 로그인 창 - 로그인 이벤트 처리
-const handleFormSubmit = (e) => {
+const handleLoginSubmit = (e) => {
     e.preventDefault();
     const input = loginForm.querySelector("input");
     const { value } = input;
     input.value = "";
     // 닉네임 Local Storage에 저장
     localStorage.setItem(NICKNAME, value);
-    body.className = LOGGED_IN;
     logIn(value);
+
+    initLogin();
 };
 
-// 로그인 창 - 이벤트리스너
-if (loginForm) {
-    loginForm.addEventListener("submit", handleFormSubmit);
-}
+const initLogin = () => {
+    // Local Storage에서 닉네임 불러오기
+    nickname = localStorage.getItem(NICKNAME);
+
+    if (nickname) {
+        loginForm.removeEventListener("submit", handleLoginSubmit);
+        loginContainer.classList.add("hidden");
+        mainContainer.classList.remove("hidden");
+    } else {
+        loginForm.addEventListener("submit", handleLoginSubmit);
+    }
+};
+
+initLogin();

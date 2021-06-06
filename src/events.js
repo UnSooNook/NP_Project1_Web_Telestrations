@@ -7,7 +7,10 @@ const events = {
     // 로그아웃(나)
     disconnect: "disconnect",
     // 로그아웃 알리기
-    disconnected: "disconnected"
+    disconnected: "disconnected",
+    // 채팅
+    sendChat: "sendChat",
+    receiveChat: "receiveChat",
 };
 
 export default events;

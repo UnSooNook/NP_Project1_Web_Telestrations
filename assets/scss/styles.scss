@@ -2,8 +2,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Jua&display=swap");
 @import "variables";
 @import "reset";
-@import "login";
 @import "notifications";
+
+@import "loginContainer";
+@import "mainContainer";
+@import "canvasContainer";
+@import "chatContainer";
 
 * {
     box-sizing: border-box;
@@ -26,21 +30,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100%;
-    // 로그인창, 게임창 둘 다 안보이게
-    .loginBox,
-    .gameContainer {
+    .hidden {
         display: none;
-    }
-    //body의 className이 loggedOut이면
-    &.loggedOut {
-        .loginBox {
-            display: block;
-        }
-    }
-    //body의 className이 loggedIn이면
-    &.loggedIn {
-        .gameContainer {
-            display: block;
-        }
     }
 }
