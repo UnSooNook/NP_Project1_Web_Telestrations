@@ -1,0 +1,10 @@
+include chatContainer
+include canvasContainer
+
+- var turn = 1;
+
+mixin mainContainer()
+    .main__container.hidden
+        +canvasContainer(turn)
+        +chatContainer
+                           
