@@ -4,7 +4,7 @@ const loginContainer = document.querySelector(".login__container");
 const mainContainer = document.querySelector(".main__container");
 const loginForm = document.querySelector(".login__form");
 const NICKNAME = "nickname";
-var nickname = localStorage.getItem(NICKNAME);
+var nickname = null;
 
 // 소캣에 닉네임 저장
 const logIn = (nickname) => {
@@ -24,7 +24,6 @@ const handleLoginSubmit = (e) => {
     input.value = "";
     // 닉네임 Local Storage에 저장
     localStorage.setItem(NICKNAME, value);
-    logIn(value);
 
     initLogin();
 };
@@ -37,6 +36,7 @@ const initLogin = () => {
         loginForm.removeEventListener("submit", handleLoginSubmit);
         loginContainer.classList.add("hidden");
         mainContainer.classList.remove("hidden");
+        logIn(nickname);
     } else {
         loginForm.addEventListener("submit", handleLoginSubmit);
     }
