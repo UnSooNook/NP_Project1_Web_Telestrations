@@ -22,7 +22,7 @@ const addPlayers = (players) => {
     });
 };
 
-// 
+// 공지 수정
 const setNotifs = (text) => {
     notifs.innerText = "";
     notifs.innerText = text;
