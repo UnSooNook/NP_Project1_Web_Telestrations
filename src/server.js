@@ -29,4 +29,4 @@ const server = app.listen(PORT, handleListening);
 const io = new Server(server);
 
 // 소캣 연결 이벤트 처리
-io.on("connection", (socket) => socketController(socket));
+io.on("connection", (socket) => socketController(socket, io));

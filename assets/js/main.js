@@ -4,3 +4,5 @@ import "./chat";
 import "./shootChat";
 
 import "./notifications";
+import "./paint";
+import "./players";

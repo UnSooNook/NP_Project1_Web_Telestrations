@@ -1,6 +1,21 @@
 mixin canvasContainer(turn = 1)
     .canvas__container
-        if turn%2
-            span odd turn
-        else
-            span even turn
+        //- if turn%2
+        //-     span odd turn
+        //- else
+        //-     span even turn
+        .main
+            #jsNotifs
+            canvas.canvas#jsCanvas
+            .controls#jsControls
+                button#jsMode Fill
+                .colors
+                    .color.jsColor(style="background-color:rgb(0, 0, 0)")
+                    .color.jsColor(style="background-color:rgb(255,255,255)")
+                    .color.jsColor(style="background-color:rgb(255,59,48)")
+                    .color.jsColor(style="background-color:rgb(255,149,0)")
+                    .color.jsColor(style="background-color:rgb(255,204,0)")
+                    .color.jsColor(style="background-color:rgb(76,217,100)")
+                    .color.jsColor(style="background-color:rgb(90,200,250)")
+                    .color.jsColor(style="background-color:rgb(0,122,255)")
+                    .color.jsColor(style="background-color:rgb(88,86,214)")

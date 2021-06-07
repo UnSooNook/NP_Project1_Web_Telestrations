@@ -7,7 +7,7 @@ const NICKNAME = "nickname";
 var nickname = null;
 
 // 소캣에 닉네임 저장
-const logIn = (nickname) => {
+export const logIn = (nickname) => {
     // 소캣 생성 및 연결
     const socket = io("/");
     // 소캣에 닉네임 저장
