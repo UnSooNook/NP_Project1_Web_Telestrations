@@ -16,6 +16,11 @@ const socketController = (socket) => {
         // 로그아웃 알리기
         broadcast(events.disconnected, { nickname: socket.nickname });
     });
+    // 메시지 보내기(나)
+    socket.on(events.sendMsg, ({ message }) => {
+        // 메시지 알리기
+        broadcast(events.newMsg, { message, nickname: socket.nickname });
+    });
 };
 
 export default socketController;
