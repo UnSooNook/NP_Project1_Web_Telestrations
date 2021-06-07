@@ -5,6 +5,7 @@
 @import "login";
 @import "notifications";
 @import "chat";
+@import "game";
 
 * {
   box-sizing: border-box;
@@ -40,7 +41,7 @@ body {
   //body의 className이 loggedIn이면
   &.loggedIn {
     .gameContainer {
-      display: block;
+      display: flex;
     }
   }
 }

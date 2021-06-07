@@ -11,7 +11,7 @@ const LOGGED_IN = "loggedIn";
 const nickname = localStorage.getItem(NICKNAME);
 
 // 소캣에 닉네임 저장
-const logIn = (nickname) => {
+export const logIn = (nickname) => {
     // 소캣 생성 및 연결
     const socket = io("/");
     // 소캣에 닉네임 저장
@@ -25,6 +25,7 @@ if (nickname === null) {
     body.className = LOGGED_OUT;
 } else {
     body.className = LOGGED_IN;
+    logIn(nickname);
 }
 
 // 로그인 창 - 로그인 이벤트 처리
