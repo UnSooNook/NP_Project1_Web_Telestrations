@@ -1,4 +1,5 @@
-import { handleNewUser, handleDisconnected, handleChat } from "./shootChat";
+import { handleNewUser, handleDisconnected } from "./login";
+import { handleChat } from "./chat";
 import { handleBeganPath, handleStrokedPath, handleFilled } from "./paint";
 import {
     handlePlayerUpdate,

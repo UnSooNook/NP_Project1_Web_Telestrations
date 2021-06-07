@@ -2,6 +2,8 @@
 const events = {
     // 닉네임 설정(나)
     setNickname: "setNickname",
+    // 로그인 (나)
+    login: "login",
     // 로그인 알리기
     newUser: "newUser",
     // 로그아웃(나)
