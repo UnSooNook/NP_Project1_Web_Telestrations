@@ -1,6 +1,7 @@
 import { getSocket } from "./sockets";
 
 const canvas = document.getElementById("jsCanvas");
+const controls = document.getElementById("jsControls");
 const ctx = canvas.getContext("2d");
 const colors = document.getElementsByClassName("jsColor");
 const mode = document.getElementById("jsMode");
@@ -104,15 +105,6 @@ const handleCM = event => {
     event.preventDefault();
 };
 
-if (canvas) {
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mousedown", startPainting);
-    canvas.addEventListener("mouseup", stopPainting);
-    canvas.addEventListener("mouseleave", stopPainting);
-    canvas.addEventListener("click", handleCanvasClick);
-    canvas.addEventListener("contextmenu", handleCM);
-}
-
 // 색상 선택 이벤트 추기
 Array.from(colors).forEach(color =>
     color.addEventListener("click", handleColorClick)
@@ -137,3 +129,41 @@ export const handleStrokedPath = ({ x, y, color }) => {
 export const handleFilled = ({ color }) => {
     fill(color);
 };
+
+// 그리기 해제
+export const disableCanvas = () => {
+    canvas.removeEventListener("mousemove", onMouseMove);
+    canvas.removeEventListener("mousedown", startPainting);
+    canvas.removeEventListener("mouseup", stopPainting);
+    canvas.removeEventListener("mouseleave", stopPainting);
+    canvas.removeEventListener("click", handleCanvasClick);
+};
+
+// 그리기 적용
+export const enableCanvas = () => {
+    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mousedown", startPainting);
+    canvas.addEventListener("mouseup", stopPainting);
+    canvas.addEventListener("mouseleave", stopPainting);
+    canvas.addEventListener("click", handleCanvasClick);
+};
+
+// 그리기 툴 해제
+export const hideControls = () => {
+    controls.style.display = "none";
+};
+
+// 그리기 툴 적용
+export const showControls = () => {
+    controls.style.display = "flex";
+};
+
+// 캔버스 초기화
+export const resetCanvas = () => {
+    fill("#FFFFFF");
+};
+
+if (canvas) {
+    canvas.addEventListener("contextmenu", handleCM);
+    hideControls();
+}

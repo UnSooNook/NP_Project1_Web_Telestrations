@@ -1,7 +1,13 @@
 import { handleNewUser, handleDisconnected } from "./notifications";
 import { handleNewMessage } from "./chat";
 import { handleBeganPath, handleStrokedPath, handleFilled } from "./paint";
-import { handlePlayerUpdate } from "./players";
+import {
+    handlePlayerUpdate,
+    handleGameStarted,
+    handleLeaderNotif,
+    handleGameEnded,
+    handleGameStarting
+} from "./players";
 
 let socket = null;
 
@@ -26,6 +32,14 @@ export const initSockets = (aSocket) => {
     socket.on(events.strokedPath, handleStrokedPath);
     // 채우기 이벤트
     socket.on(events.filled, handleFilled);
-    // 
+    // 플레이어 업데이트 이벤트
     socket.on(events.playerUpdate, handlePlayerUpdate);
+    // 게임 시작 이벤트
+    socket.on(events.gameStarted, handleGameStarted);
+    // 방장 이벤트
+    socket.on(events.leaderNotif, handleLeaderNotif);
+    // 게임 종료 이벤트
+    socket.on(events.gameEnded, handleGameEnded);
+    // 게임 시작 공지
+    socket.on(events.gameStarting, handleGameStarting);
 };

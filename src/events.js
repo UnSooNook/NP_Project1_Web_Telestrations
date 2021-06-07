@@ -24,8 +24,14 @@ const events = {
     fill: "fill",
     // 채우기 알리기
     filled: "filled",
-    // 
-    playerUpdate: "playerUpdate"
+    // 플레이어 업데이트
+    playerUpdate: "playerUpdate",
+    // 게임 시작 알리기
+    gameStarted: "gameStarted",
+    // 방장 알리기
+    leaderNotif: "leaderNotif",
+    gameEnded: "gameEnded",
+    gameStarting: "gameStarting"
 };
 
 export default events;
