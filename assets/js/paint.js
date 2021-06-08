@@ -1,4 +1,4 @@
-import { getSocket } from "./sockets";
+import { getMySocket } from "./mySocket";
 
 const canvas = document.getElementById("jsCanvas");
 const controls = document.getElementById("jsControls");
@@ -52,12 +52,12 @@ const onMouseMove = (event) => {
     if (!painting) {
         beginPath(x, y);
         // 그리기 시작(나)
-        getSocket().emit(window.events.beginPath, { x, y });
+        getMySocket().emit(window.events.beginPath, { x, y });
         // 그리는 중
     } else if (!filling) {
         strokePath(x, y);
         // 그리기(나)
-        getSocket().emit(window.events.strokePath, {
+        getMySocket().emit(window.events.strokePath, {
             x,
             y,
             color: ctx.strokeStyle,
@@ -97,7 +97,7 @@ const fill = (color = null) => {
 const handleCanvasClick = () => {
     if (filling) {
         fill();
-        getSocket().emit(window.events.fill, { color: ctx.fillStyle });
+        getMySocket().emit(window.events.fill, { color: ctx.fillStyle });
     }
 };
 
@@ -166,4 +166,22 @@ export const resetCanvas = () => {
 if (canvas) {
     canvas.addEventListener("contextmenu", handleCM);
     hideControls();
+}
+
+const drawBtn = document.querySelector(".canvas__btn__draw");
+let draw = false;
+
+const toogleDraw = () => {
+    if (draw) {
+        disableCanvas();
+        drawBtn.innerHTML = "그리기 시작 (테스트)";
+    } else {
+        enableCanvas();
+        drawBtn.innerHTML = "그리기 종료 (테스트)";
+    }
+    draw = !draw;
+};
+
+if (drawBtn) {
+    drawBtn.addEventListener("click", toogleDraw);
 }

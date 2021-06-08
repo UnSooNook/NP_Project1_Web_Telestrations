@@ -1,86 +1,148 @@
 import events from "./events.js";
 
-// 서버의 소캣 리스트
+// 플레이어 관리
 let sockets = [];
-// 게임 중
-let inPlaying = false;
+// 게임 스케치북 관리
+let sketchBook = {};
 // 방장
 let leader = null;
+// 게임 진행 중 여부
+let inPlaying = false;
 // 게임 턴
-let gameTurn = null;
-// 게임 데이터
-let sketchBook = {};
+let gameTurn = -1;
+// 준비 카운트
+let readyCount = 0;
 
 // 소켓 이벤트 처리
 const socketController = (socket, io) => {
-    // Broadcast
+    // 나를 제외하고 broadcast
     const broadcast = (event, data) => {
         socket.broadcast.emit(event, data);
     };
-    // Super Broadcast
+    // 나를 포함한 모두에게 알림
     const superBroadcast = (event, data) => {
         io.emit(event, data);
     };
-    // 플레이어 업데이트
-    const sendPlayerUpdate = () => {
-        superBroadcast(events.playerUpdate, { sockets });
+    // 특정 플레이어에게 알림
+    const sendTo = (id, event, data) => {
+        io.to(socket.id).emit(event, data);
+    };
+    // 플레이어 정보 업데이트 알림
+    const updatePlayer = () => {
+        superBroadcast(events.updatePlayer, { sockets });
+    };
+    // 방장이 변경될 때 클라이언트 소캣에게 알림
+    const changeLeader = (leaderSocketID) => {
+        leader = leaderSocketID;
+        // 클라이언트에 알림
+        if (leader) {
+            sendTo(leader, events.leaderNotif, {});
+            console.log(`Change Leader - id: ${leader}`);
+        }
     };
     // 게임 시작
-    const startGame = () => {
-        inPlaying = true;
-        gameTurn = 1;
-        // TODO
+    const gameStart = () => {
+        // TODO: 게임 시작 알리기, 초기화, 단어 설정
+        console.log("Game Start!");
     };
     // 게임 종료
-    const endGame = () => {
-        inPlaying = false;
-        gameTurn = null;
+    const terminateGame = () => {
         // TODO
+        console.log("Game Terminated!");
     };
 
-    // 방장 정하기
-    const chooseLeader = () => {
-        // TODO
-    };
-
-    // 로그인 (나)
-    socket.on(events.login, ({ nickname }) => {
-        // 기본 소켓 변수 설정
+    // 클라이언트가 접속할 때 관리 및 알림
+    socket.on(events.logIn, ({ nickname }) => {
+        console.log(`logIn - nickname: ${nickname}, id: ${socket.id}`);
+        // 소켓 초기회
         socket.nickname = nickname;
         socket.ready = false;
-        // 소캣 등록
-        sockets.push({ id: socket.id, nickname: nickname });
-        // 방장인지 확인
-        if (sockets.length === 1) {
-            socket.leader = true;
-            leader = socket.id;
-        } else {
-            socket.leader = false;
-        }
-        // 로그인 알리기
-        superBroadcast(events.newUser, { nickname });
-        // 플레이어 업데이트 알림
-        sendPlayerUpdate();
+        socket.leader = false;
+        // sockets 반영
+        sockets = sockets.filter(
+            (aSocket) => aSocket.nickname !== socket.nickname
+        );
+        sockets.push({
+            id: socket.id,
+            nickname: nickname,
+            leader: socket.leader,
+            ready: socket.ready,
+        });
+        if (sockets.length === 1) changeLeader(socket.id);
+        // 새 플레이어 알림
+        superBroadcast(events.helloPlayer, { nickname });
+        // 플레이어 정보 업데이트
+        updatePlayer();
     });
 
-    // 로그아웃(나)
-    socket.on(events.disconnect, () => {
-        // 소캣 등록 해제
+    // 플레이어가 로그아웃 할 때 관리 및 알림
+    socket.on(events.logOut, () => {
+        console.log(`logOut - nickname: ${socket.nickname}, id: ${socket.id}`);
+        // sockets에서 제거
         sockets = sockets.filter((aSocket) => aSocket.id !== socket.id);
-        if (socket.leader) {
-            // TODO : 새로운 방장 설정
+        // 방장이었으면 방장 재설정
+        if (leader) {
+            if (socket.id === leader) {
+                if (sockets.length >= 1) changeLeader(sockets[0].id);
+                else changeLeader(null);
+            }
         }
-        // 로그아웃 알리기
-        broadcast(events.disconnected, { nickname: socket.nickname });
-        sendPlayerUpdate();
+        // 게임중이었다면 게임 종료
+        if (inPlaying) terminateGame();
+        // 플레이어 나감 알림
+        broadcast(events.byePlayer, { nickname: socket.nickname });
+        // 플레이어 정보 업데이트
+        updatePlayer();
     });
 
     // 채팅
-    socket.on(events.sendChat, ({ chats }) => {
-        superBroadcast(events.receiveChat, {
+    socket.on(events.sendMessage, ({ message }) => {
+        superBroadcast(events.newMessage, {
             nickname: socket.nickname,
-            chats,
+            message,
         });
+        console.log(`Send Message - ${socket.nickname}: ${message}`);
+    });
+
+    // 방장이 변경될 때 서버의 방장 소캣에 반영
+    socket.on(events.leaderConfirm, ({}) => {
+        socket.leader = true;
+        console.log(`Leader Confirm - ${socket.nickname}`);
+    });
+
+    // 플레이어가 레디 버튼을 눌렀을 때
+    socket.on(events.lobbyReady, ({ ready }) => {
+        // 방장이 시작 버튼을 눌렀을 때 준비가 됐으면 게임 시작
+        if (socket.id === leader) {
+            if (readyCount === sockets.length - 1) {
+                ready = true;
+                // TODO: 게임 시작
+                gameStart();
+                return;
+            } else {
+                ready = false;
+                console.log(
+                    `Lobby Ready - game start fail, count: ${readyCount}`
+                );
+            }
+        } else {
+            if (ready) {
+                readyCount++;
+            } else {
+                readyCount--;
+            }
+        }
+        // sockets에 상태 반영 후 알림
+        socket.ready = ready;
+        const me = sockets.find((aSocket) => {
+            if (aSocket.id === socket.id) return true;
+        });
+        const myIndex = sockets.indexOf(me);
+        sockets[myIndex].ready = ready;
+        updatePlayer();
+        console.log(
+            `Lobby Ready - nickname: ${socket.nickname}, ready: ${socket.ready}, count: ${readyCount}`
+        );
     });
 
     // 그리기 시작(나)

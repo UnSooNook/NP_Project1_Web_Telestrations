@@ -1,6 +1,6 @@
-import "./sockets";
-import "./login";
+import "./mySocket";
+import "./logIn";
 import "./chat";
+import "./players";
 
 import "./paint";
-import "./players";

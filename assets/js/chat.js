@@ -1,4 +1,4 @@
-import { getSocket } from "./sockets";
+import { getMySocket } from "./mySocket";
 
 const chatForm = document.querySelector(".chat__form");
 const chatListView = document.querySelector(".chat__view__div");
@@ -11,22 +11,22 @@ export const shootChat = (text, color) => {
     chatListView.appendChild(chat);
 };
 
-// 채팅 이벤트 처리
-export const handleChat = ({ nickname, chats }) => {
-    shootChat(`${nickname}: ${chats}`, "white");
+// 채팅 소켓 이벤트 핸들러
+export const handleNewMessage = ({ nickname, message }) => {
+    shootChat(`${nickname}: ${message}`, "white");
 };
 
+// 채팅 입력 후 엔터 키 이벤트 핸들러
 const handleSubmintChat = (e) => {
     e.preventDefault();
     const input = chatForm.querySelector("input");
     const { value } = input;
     input.value = "";
-    console.log(value);
-
-    const socket = getSocket();
-    socket.emit(window.events.sendChat, { chats: value });
+    const socket = getMySocket();
+    socket.emit(window.events.sendMessage, { message: value });
 };
 
+// 채팅 Container 초기화
 const initChat = () => {
     chatForm.addEventListener("submit", handleSubmintChat);
 };

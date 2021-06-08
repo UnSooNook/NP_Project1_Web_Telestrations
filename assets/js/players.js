@@ -1,64 +1,46 @@
-import {
-    disableCanvas,
-    hideControls,
-    enableCanvas,
-    showControls,
-    resetCanvas,
-} from "./paint";
+import { getMySocket, updateMySocket } from "./mySocket";
 
-const board = document.getElementById("jsBoard");
-const notifs = document.getElementById("jsNotifs");
+const readyBtn = document.querySelector(".canvas__btn__ready");
 
-// 플레이어 업데이트 함수
-const addPlayers = (players) => {
-    // // 초기화
-    // board.innerHTML = "";
-    // // 플레이어들 정보 전부 작성
-    // players.forEach((player) => {
-    //     const playerElement = document.createElement("span");
-    //     playerElement.innerText = `${player.nickname}: ${player.points}`;
-    //     board.appendChild(playerElement);
-    // });
+// 플레이어 정보 업데이트
+export const handleUpdatePlayer = ({ sockets }) => {
+    // 내 정보 업데이트
+    const me = getMySocket();
+    const newMe = sockets.find((socket) => {
+        if (socket.id === me.id) return true;
+    });
+    updateMySocket(newMe);
+    // TODO: 화면 업데이트 (방장, 레디, 플레이어 수 등)
 };
 
-// 공지 수정
-const setNotifs = (text) => {
-    notifs.innerText = "";
-    notifs.innerText = text;
+// 내가 방장으로 업데이트
+export const handleLeaderNotif = ({}) => {
+    let me = getMySocket();
+    me.leader = true;
+    me.emit(window.events.leaderConfirm, {});
+    updateMySocket(me);
+    console.log("players - leaderNotif", me.leader);
+
+    me.emit(window.events.sendMessage, { message: "방장이 되었습니다." });
 };
 
-// 플레이어 업데이트
-export const handlePlayerUpdate = ({ sockets }) => {
-    addPlayers(sockets);
+// 로비창에서 준비버튼을 눌렀을 때 이벤트 리스너
+const handleLobbyReady = (e) => {
+    e.preventDefault();
+    const me = getMySocket();
+    if (me.ready) {
+        me.ready = false;
+        console.log("준비 완료 -> 대기");
+        readyBtn.innerHTML = "준비";
+    } else {
+        me.ready = true;
+        console.log("대기 -> 준비 완료");
+        readyBtn.innerHTML = "준비 완료";
+    }
+    me.emit(window.events.lobbyReady, { ready: me.ready });
+    updateMySocket(me);
 };
 
-// 게임 시작
-export const handleGameStarted = () => {
-    // 공지 지우기
-    setNotifs("");
-    // 그리기 해제
-    disableCanvas();
-    hideControls();
-};
-
-// 방장, 단어 공지
-export const handleLeaderNotif = ({ word }) => {
-    enableCanvas();
-    showControls();
-    notifs.innerText = `You are the leader, paint: ${word}`;
-};
-
-// 게임 종료
-export const handleGameEnded = () => {
-    setNotifs("Game ended.");
-    disableCanvas();
-    hideControls();
-    resetCanvas();
-};
-
-// 게임 시작 공지
-export const handleGameStarting = () => {
-    setNotifs("Game will start soon");
-};
-
-enableCanvas();
+if (readyBtn) {
+    readyBtn.addEventListener("click", handleLobbyReady);
+}
