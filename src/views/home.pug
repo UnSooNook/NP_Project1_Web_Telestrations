@@ -10,11 +10,8 @@ html(lang="ko")
         link(rel="stylesheet", href="styles/styles.css")
         title Web_Telestrations
     body
-        +loginContainer()
-        +mainContainer()
-        button#jsSubmitButton 제출
-        button#jsPrevButton 이전
-        button#jsNextButton 다음
+        +loginContainer
+        +mainContainer
         script.
             window.events = !{events}
         script(src="/socket.io/socket.io.js")

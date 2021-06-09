@@ -67,7 +67,12 @@ const socketController = (socket, io) => {
         words = chooseWords(sockets.length);
         // 게임 시작 알리기
         for (let i in words) {
-            sketchBook.push({id: sockets[i].id, nickname: sockets[i].nickname, word: words[i], history:[]});
+            sketchBook.push({
+                id: sockets[i].id,
+                nickname: sockets[i].nickname,
+                word: words[i],
+                history: [],
+            });
             sockets[i].ready = false;
             finalTurn = Math.floor(sockets.length / 2) * 2;
             console.log(`${sockets[i].nickname} : ${words[i]}`);
@@ -83,7 +88,7 @@ const socketController = (socket, io) => {
     const gameEnd = () => {
         console.log("gameEnd!");
         superBroadcast(events.gameEnd, { finalSketchBook: sketchBook });
-    }
+    };
     // 게임 초기화
     const terminateGame = () => {
         console.log("terminateGame..");
@@ -123,7 +128,7 @@ const socketController = (socket, io) => {
         console.log("logIn", nickname, socket.id);
         // 소캣 초기화
         socket.nickname = nickname;
-        socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16);
+        socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정
         socket.ready = false;
         socket.leader = false;
         // sockets 반영
@@ -175,7 +180,7 @@ const socketController = (socket, io) => {
             message,
             messageColor,
         });
-        console.log("sendMessage", message);
+        console.log(`sendMessage ${socket.nickname}: ${message}`);
     });
 
     // 방장이 변경될 때 서버의 방장 소캣에 반영
@@ -189,6 +194,7 @@ const socketController = (socket, io) => {
             message: `${socket.nickname}님이 방장이 되었습니다.`,
             messageColor: "green",
         });
+        // 플레이어 정보 업데이트
         updatePlayer();
         console.log("leaderConfirm", socket.nickname);
     });
@@ -200,10 +206,28 @@ const socketController = (socket, io) => {
             if (sockets.length >= 2 && readyCount === sockets.length - 1) {
                 ready = true;
                 // TODO: 게임 시작
-                gameStart();
+                // 게임 시작 채팅 알림 (5초 카운트)
+                let startCount = 5;
+                const startTimer = setInterval(() => {
+                    superBroadcast(events.newMessage, {
+                        message: `게임이 곧 시작됩니다...${startCount}`,
+                        messageColor: "red",
+                    });
+                    startCount = startCount - 1;
+                    // 5초 후 게임 시작
+                    if (startCount === 0 && startTimer) {
+                        clearInterval(startTimer);
+                        gameStart();
+                    }
+                }, 1000);
                 return;
             } else {
                 ready = false;
+                // 게임 시작 불가능 채팅 알림
+                superBroadcast(events.newMessage, {
+                    message: `모든 플레이어가 준비하지 않아 게임을 시작할 수 없습니다.`,
+                    messageColor: "red",
+                });
                 console.log("lobbyReady: game start fail...");
             }
         } else {
@@ -217,6 +241,7 @@ const socketController = (socket, io) => {
         socket.ready = ready;
         const myIndex = whereAmI(socket.id);
         sockets[myIndex].ready = ready;
+        // 플레이어 정보 업데이트
         updatePlayer();
         console.log("lobbyReady:", socket.nickname, socket.ready, readyCount);
     });
