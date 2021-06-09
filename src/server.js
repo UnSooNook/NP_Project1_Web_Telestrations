@@ -10,7 +10,7 @@ import events from "./events.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 5000;
+const PORT = 4000;
 const app = express();
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
