@@ -1,6 +1,6 @@
 mixin canvasContainer
     .canvas__container
-        .container.help__container.hidden
+        .container.help__container
             p 텔레스트레이션
             p 설명이 들어간다
             p 계속 들어간다
@@ -15,24 +15,32 @@ mixin canvasContainer
                 span 입력된 제시어는 
                 span.word ㅇㅇㅇ
                 span 입니다.
-        .container.mod1__container
+        .container.mod1__container.hidden
             div
                 span.word ㅇㅇㅇ
                 span 을(를) 그려주세요
-            .canvas__div
+            .canvas__div 
                 canvas
                 .canvas__controls
-                    button 초기화
+                    button.btn__clear.border 초기화
                     button(style="background-color:rgb(0, 0, 0)") 
-                    button(style="background-color:rgb(255,255,255)")
-                    button(style="background-color:rgb(255,59,48)")
+                    button.border(style="background-color:rgb(255,255,255)")
+                    button(style="background-color:rgb(255,59,48)") 
                     button(style="background-color:rgb(255,149,0)")
                     button(style="background-color:rgb(255,204,0)")
                     button(style="background-color:rgb(76,217,100)")
                     button(style="background-color:rgb(90,200,250)")
                     button(style="background-color:rgb(0,122,255)")
                     button(style="background-color:rgb(88,86,214)")
-        .container.mod2__container.hidden mod2 - answer
+        .container.mod2__container.hidden
+            .canvas__div
+                canvas
+            form
+                input(placeholder="그림에 맞는 정답을 입력해주세요", type="text")
+            .submitWord.hidden
+                span 입력된 제시어는 
+                span.word ㅇㅇㅇ
+                span 입니다.
         .canvas__btns
             button.canvas__btn__draw.hidden 그리기 시작(테스트)
             button.canvas__btn__next.hidden 완료

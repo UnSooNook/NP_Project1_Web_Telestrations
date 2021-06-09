@@ -63,10 +63,32 @@ const handleGameSubmit = [
         const form = modContainer[0].querySelector("form");
         const input = form.querySelector("input");
         const { value } = input;
-        console.log(value);
         input.value = "";
         submitWord.querySelector(".word").innerHTML = value;
         form.classList.add("hidden");
+        nextBtn.classList.add("hidden");
+        submitWord.classList.remove("hidden");
+        gameSubmit(value);
+    },
+    // mod 1
+    (e) => {
+        e.preventDefault();
+        // TODO: get canvas data
+        const drawing = "그림";
+        nextBtn.classList.add("hidden");
+        gameSubmit(drawing);
+    },
+    // mod 2
+    (e) => {
+        e.preventDefault();
+        const submitWord = modContainer[2].querySelector(".submitWord");
+        const form = modContainer[2].querySelector("form");
+        const input = form.querySelector("input");
+        const { value } = input;
+        input.value = "";
+        submitWord.querySelector(".word").innerHTML = value;
+        form.classList.add("hidden");
+        nextBtn.classList.add("hidden");
         submitWord.classList.remove("hidden");
         gameSubmit(value);
     },
@@ -82,7 +104,27 @@ const deactiveMod = [
         const form = modContainer[0].querySelector("form");
         form.classList.remove("hidden");
         form.removeEventListener("submit", handleGameSubmit[0]);
+        nextBtn.classList.remove("hidden");
+        nextBtn.removeEventListener("click", handleGameSubmit[0]);
         const submitWord = modContainer[0].querySelector(".submitWord");
+        submitWord.classList.add("hidden");
+    },
+    // mod 1
+    () => {
+        modContainer[1].querySelector(".word").innerHTML = "";
+        // TODO: canvas deactive
+        nextBtn.classList.remove("hidden");
+        nextBtn.removeEventListener("click", handleGameSubmit[1]);
+    },
+    // mod 2
+    () => {
+        modContainer[2].querySelector(".word").innerHTML = "";
+        const form = modContainer[2].querySelector("form");
+        form.classList.remove("hidden");
+        form.removeEventListener("submit", handleGameSubmit[2]);
+        nextBtn.classList.remove("hidden");
+        nextBtn.removeEventListener("click", handleGameSubmit[2]);
+        const submitWord = modContainer[2].querySelector(".submitWord");
         submitWord.classList.add("hidden");
     },
 ];
@@ -94,16 +136,20 @@ const activeMod = [
         modContainer[0].querySelector(".word").innerHTML = word;
         const form = modContainer[0].querySelector("form");
         form.addEventListener("submit", handleGameSubmit[0]);
+        nextBtn.addEventListener("click", handleGameSubmit[0]);
     },
     // mod 1
     (word) => {
-        modContainer[1].innerHTML = word;
-        console.log(word);
+        modContainer[1].querySelector(".word").innerHTML = word;
+        // TODO: canvas active
+        nextBtn.addEventListener("click", handleGameSubmit[1]);
     },
     // mod 2
     (drawing) => {
-        modContainer[2].innerHTML = drawing;
-        console.log(drawing);
+        // TODO: show drawing
+        const form = modContainer[2].querySelector("form");
+        form.addEventListener("submit", handleGameSubmit[2]);
+        nextBtn.addEventListener("click", handleGameSubmit[2]);
     },
 ];
 
@@ -173,7 +219,7 @@ const gameSubmit = (data) => {
     else {
         console.log("gameManager - handleGameSubmit 맞추기 제출");
         // TODO: 정답 가져오기
-        data = `${getMySocket().nickname}'s 정답`;
+        // data = `${getMySocket().nickname}'s 정답`;
     }
     getMySocket().emit(window.events.gameSubmit, { data: data });
     submit = true;
@@ -188,7 +234,7 @@ const gameSubmit = (data) => {
 // 그릴 단어를 받았을 때
 export const handleDrawThis = ({ word }) => {
     console.log("gameManager - handleDrawThis:", word);
-    // TODO: 단어 표시, 그리기
+    submit = false; // 내가 추가한건데 여기 들어가는 거 맞지?
     selectMod(currMode, word);
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
@@ -197,7 +243,7 @@ export const handleDrawThis = ({ word }) => {
 // 맞출 단어를 받았을 때
 export const handleGuessThis = ({ drawing }) => {
     console.log("gameManager - handleGuessThis:", drawing);
-    // TODO: 그림 표시, 맞추기
+    submit = false; // 내가 추가한건데 여기 들어가는 거 맞지?
     selectMod(currMode, drawing);
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
