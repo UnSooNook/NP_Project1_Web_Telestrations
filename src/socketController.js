@@ -69,7 +69,7 @@ const socketController = (socket, io) => {
         words = chooseWords(sockets.length);
         // 게임 시작 알리기
         for (let i in words) {
-            sketchBook.push({id: sockets[i].id, word: words[i], history:[]});
+            sketchBook.push({id: sockets[i].id, nickname: sockets[i].nickname, word: words[i], history:[]});
             sockets[i].ready = false;
             finalTurn = Math.floor(sockets.length / 2) * 2;
             console.log(`${sockets[i].nickname} : ${words[i]}`);
@@ -78,7 +78,12 @@ const socketController = (socket, io) => {
         updatePlayer();
         console.log("gameStart! 진행되는 턴:", finalTurn);
     };
-    // 게임 종료
+    // 게임 완료
+    const gameEnd = () => {
+        console.log("gameEnd!");
+        superBroadcast(events.gameEnd, { finalSketchBook: sketchBook });
+    }
+    // 게임 초기화
     const terminateGame = () => {
         console.log("terminateGame..");
         // 게임 변수 초기화
@@ -100,7 +105,7 @@ const socketController = (socket, io) => {
         if (gameTurn === finalTurn) {
             // TODO: 리뷰 창 넘어가기
             console.log("nextTurn - 게임 완료!");
-            terminateGame();
+            gameEnd();
             return;
         }
         readyCount = 0;
@@ -258,6 +263,12 @@ const socketController = (socket, io) => {
         const data = sketchBook[targetIndex].history[gameTurn - 1];
         sendTo(socket.id, events.guessThis, { drawing: data });
         console.log("letMeGuess - 맞출 그림:", data);
+    });
+
+    // 페이지 업데이트 이벤트
+    socket.on(events.updatePageNum, ({ newPage }) => {
+        console.log("updatePageNum:", newPage);
+        superBroadcast(events.updatePage, { newPage: newPage });
     });
 };
 
