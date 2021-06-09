@@ -8,6 +8,18 @@ const NICKNAME = "nickname";
 // 내 닉네임
 let nickname = localStorage.getItem(NICKNAME);
 
+// 로그인 화면을 숨기고 메인 화면 띄우기
+const enableMainView = () => {
+    loginContainer.classList.add("hidden");
+    mainContainer.classList.remove("hidden");
+};
+
+// 메인 화면을 숨기고 로그인 화면 띄우기
+const disableMainView = () => {
+    loginContainer.classList.remove("hidden");
+    mainContainer.classList.add("hidden");
+};
+
 // 새로 로그인했거나 이미 nickname 정보가 있을 경우
 const logIn = (nickname) => {
     // 소캣 생성
@@ -25,15 +37,14 @@ const handleLogInSubmit = (e) => {
     input.value = "";
     // 닉네임 Local Storage에 저장
     localStorage.setItem(NICKNAME, value);
-    // body.className = LOGGED_IN;
-    loginContainer.classList.add("hidden");
-    mainContainer.classList.remove("hidden");
+    // 메인 화면 띄우기
+    enableMainView();
     nickname = value;
 
     logIn(nickname);
 };
 
-// 새 플레이어 로그인 시 팝업 알림
+// 새 플레이어 로그인 시 채팅 알림
 export const handleHelloPlayer = ({ nickname }) => {
     shootChat({
         message: `${nickname}님이 입장하였습니다.`,
@@ -42,7 +53,7 @@ export const handleHelloPlayer = ({ nickname }) => {
     console.log("notifications - hello", nickname);
 };
 
-// 플레이어 로그아웃 시 팝업 알림
+// 플레이어 로그아웃 시 채팅 알림
 export const handleByePlayer = ({ nickname }) => {
     shootChat({
         message: `${nickname}님이 나갔습니다.`,
@@ -53,35 +64,12 @@ export const handleByePlayer = ({ nickname }) => {
 
 // 창 설정 (로그인 창 / 게임 창)
 if (nickname === null) {
-    loginContainer.classList.remove("hidden");
-    mainContainer.classList.add("hidden");
+    disableMainView();
 } else {
-    loginContainer.classList.add("hidden");
-    mainContainer.classList.remove("hidden");
+    enableMainView();
     logIn(nickname);
 }
 // 로그인 창 - 이벤트리스너
 if (loginForm) {
     loginForm.addEventListener("submit", handleLogInSubmit);
 }
-
-// /////////////////////////////////////////////////////////////////////////
-// const body = document.querySelector("body");
-// const loginForm = document.getElementById("jsLogin");
-
-// const NICKNAME = "nickname";
-// const LOGGED_OUT = "loggedOut";
-// const LOGGED_IN = "loggedIn";
-
-// // 창 설정 (로그인 창 / 게임 창)
-// if (nickname === null) {
-//     body.className = LOGGED_OUT;
-// } else {
-//     body.className = LOGGED_IN;
-//     logIn(nickname);
-// }
-// // 로그인 창 - 이벤트리스너
-// if (loginForm) {
-//     loginForm.addEventListener("submit", handleLogInSubmit);
-// }
-// /////////////////////////////////////////////////////////////////////////

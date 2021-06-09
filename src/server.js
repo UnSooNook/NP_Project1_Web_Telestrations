@@ -1,5 +1,5 @@
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 import express from "express";
 import { Server, Socket } from "socket.io";
 import logger from "morgan";
@@ -10,16 +10,13 @@ import events from "./events.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 4000;
+const PORT = 5000;
 const app = express();
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 // app.use(logger("dev"));
 app.use(express.static(path.join(__dirname, "static")));
 app.get("/", (req, res) => {
-    res.render("home", { events: JSON.stringify(events) });
-});
-app.get("/asdf", (req, res) => {
     res.render("home", { events: JSON.stringify(events) });
 });
 
@@ -32,4 +29,4 @@ const server = app.listen(PORT, handleListening);
 export const io = new Server(server);
 
 // 소캣 연결 이벤트 처리
-io.on("connection", socket => socketController(socket, io));
+io.on("connection", (socket) => socketController(socket, io));

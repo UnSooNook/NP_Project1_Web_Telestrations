@@ -10,7 +10,7 @@ export const handleUpdatePlayer = ({ sockets }) => {
     const newMe = sockets.find((socket) => {
         if (socket.id === me.id) return true;
     });
-
+    // 업데이트 된 정보에 맞게 플레이어 리스트 그리기
     playersDiv.innerHTML = "";
     sockets.map((socket) => {
         const playerDiv = document.createElement("div");
@@ -40,6 +40,7 @@ export const handleLeaderNotif = ({}) => {
     console.log(me.nickname);
     me.emit(window.events.leaderConfirm, {});
     updateMySocket(me);
+    // 방장인 경우 준비 버튼을 게임 시작 버튼 으로
     readyBtn.innerHTML = "게임 시작";
     console.log("players - leaderNotif", me.leader);
 };
