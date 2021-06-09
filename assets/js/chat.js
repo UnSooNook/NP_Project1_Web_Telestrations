@@ -16,26 +16,46 @@ const chatListView = document.querySelector(".chat__view__div");
 // };
 
 // 채팅 띄우기
-export const shootChat = (text, color) => {
+export const shootChat = ({ name, nameColor, message, messageColor }) => {
+    const messageDiv = document.createElement("div");
+    const nickname = document.createElement("span");
     const chat = document.createElement("p");
-    chat.innerText = text;
-    chat.style.color = color;
-    chatListView.appendChild(chat);
-    console.log("shootChat", text);
+
+    messageDiv.className = "messages";
+    if (name) {
+        nickname.innerText = `${name}: `;
+        nickname.style.color = nameColor;
+        messageDiv.append(nickname);
+    }
+    chat.innerText = `${message}`;
+    chat.style.color = messageColor;
+    messageDiv.append(chat);
+
+    chatListView.appendChild(messageDiv);
 };
 
 // 플레이어가 보낸 메시지 처리
-export const handleNewMessage = ({ nickname, message }) => {
-	shootChat(`${nickname}: ${message}`, "white");
-    console.log("handleNewMessage", `${nickname}: ${message}`);
+export const handleNewMessage = ({
+    name,
+    nameColor,
+    message,
+    messageColor,
+}) => {
+    shootChat({
+        name,
+        nameColor,
+        message,
+        messageColor,
+    });
+    console.log("handleNewMessage", `${name}: ${message}`);
 };
 
 // 내가 보낸 메시지 이벤트 리스너
 const handleSendMessage = (e) => {
-	e.preventDefault();
+    e.preventDefault();
     const input = chatForm.querySelector("input");
     const { value } = input;
-	getMySocket().emit(window.events.sendMessage, { message: value });
+    getMySocket().emit(window.events.sendMessage, { message: value });
     input.value = "";
     console.log("handleSendMessage", value);
 };
@@ -45,5 +65,4 @@ const handleSendMessage = (e) => {
 //     sendMsg.addEventListener("submit", handleSendMessage);
 // }
 
-if (chatForm)
-        chatForm.addEventListener("submit", handleSendMessage);
+if (chatForm) chatForm.addEventListener("submit", handleSendMessage);

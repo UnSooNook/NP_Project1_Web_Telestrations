@@ -4,7 +4,11 @@ mixin canvasContainer(turn = 1)
         //-     span odd turn
         //- else
         //-     span even turn
-        .main
+        .help__container
+            p 텔레스트레이션
+            p 설명이 들어간다
+            p 계속 들어간다
+        .main.hidden
             #jsNotifs
             canvas.canvas#jsCanvas
             .controls#jsControls
@@ -20,5 +24,5 @@ mixin canvasContainer(turn = 1)
                     .color.jsColor(style="background-color:rgb(0,122,255)")
                     .color.jsColor(style="background-color:rgb(88,86,214)")
         .canvas__btns
-            button.canvas__btn__draw 그리기 시작(테스트)
+            button.canvas__btn__draw.hidden 그리기 시작(테스트)
             button.canvas__btn__ready 준비
