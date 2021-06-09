@@ -49,12 +49,13 @@ const socketController = (socket, io) => {
     const changeLeader = (leaderSocketID) => {
         leader = leaderSocketID;
         // 클라이언트에 알림
-        if (leader)
+        if (leader) {
             sendTo(leaderSocketID, events.leaderNotif, {});
-        const myIndex = whereAmI(leader);
-        if (sockets[myIndex].ready) {
-            sockets[myIndex].ready = false;
-            readyCount--;
+            const myIndex = whereAmI(leader);
+            if (sockets[myIndex].ready) {
+                sockets[myIndex].ready = false;
+                readyCount--;
+            }
         }
         console.log("changeLeader", leader);
     };

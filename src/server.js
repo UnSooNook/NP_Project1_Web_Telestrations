@@ -1,7 +1,7 @@
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath } from 'url';
 import express from "express";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import logger from "morgan";
 
 import socketController from "./socketController.js";
@@ -19,6 +19,9 @@ app.use(express.static(path.join(__dirname, "static")));
 app.get("/", (req, res) => {
     res.render("home", { events: JSON.stringify(events) });
 });
+app.get("/asdf", (req, res) => {
+    res.render("home", { events: JSON.stringify(events) });
+});
 
 const handleListening = () => {
     console.log(`✅ Server running: http://localhost:${PORT}`);
@@ -26,7 +29,7 @@ const handleListening = () => {
 
 // 서버, 소켓 서버 시작
 const server = app.listen(PORT, handleListening);
-const io = new Server(server);
+export const io = new Server(server);
 
 // 소캣 연결 이벤트 처리
-io.on("connection", (socket) => socketController(socket, io));
+io.on("connection", socket => socketController(socket, io));

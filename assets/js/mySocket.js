@@ -1,8 +1,7 @@
 import { handleNewMessage } from "./chat";
 import { handleDrawThis, handleGameStart, handleGuessThis, handleNextTurn, handleTerminateGame } from "./gameManager";
 import { handleByePlayer, handleHelloPlayer } from "./logIn";
-import { handleLeaderNotif, handleUpdatePlayer } from "./players";
-
+import { handleUpdatePlayer, handleLeaderNotif } from "./players";
 
 // 내 정보 관리
 let socket = null;

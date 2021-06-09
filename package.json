@@ -1,7 +1,7 @@
 {
-  "name": "Web_Telestrations",
+  "name": "guess-mine",
   "version": "1.0.0",
-  "description": "Web_Telestrations",
+  "description": "Realtime Drawing Game built with SocketIO, Gulp and Node",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/UnSooNook/NP_Project1_Web_Telestrations.git"
+    "url": "git+https://github.com/Soonwook34/nomadcoders-study_guess-mine_test.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/UnSooNook/NP_Project1_Web_Telestrations/issues"
+    "url": "https://github.com/Soonwook34/nomadcoders-study_guess-mine_test/issues"
   },
-  "homepage": "https://github.com/UnSooNook/NP_Project1_Web_Telestrations#readme",
+  "homepage": "https://github.com/Soonwook34/nomadcoders-study_guess-mine_test#readme",
   "dependencies": {
     "@babel/preset-env": "^7.14.4",
     "babelify": "^10.0.0",

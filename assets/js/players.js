@@ -21,7 +21,6 @@ export const handleLeaderNotif = ({}) => {
 	me.leader = true;
     me.emit(window.events.leaderConfirm, {});
     updateMySocket(me);
-	getMySocket().emit(window.events.sendMessage, { message: `내가 방장이다` });
 	console.log("players - leaderNotif", me.leader);
 };
 
@@ -31,12 +30,12 @@ const handleLobbyReady = (e) => {
 	const me = getMySocket();
 	if (me.ready) {
 		me.ready = false;
-		console.log("준비 완료 -> 대기");
+		console.log("준비 완료 >>> 대기");
 		// TODO: 버튼 업데이트 (준비 완료 -> 준비)
 	}
 	else {
 		me.ready = true;
-		console.log("대기 -> 준비 완료");
+		console.log("대기 >>> 준비 완료");
 		// TODO: 버튼 업데이트 (준비 -> 준비 완료)
 	}
 	me.emit(window.events.lobbyReady, { ready: me.ready });
