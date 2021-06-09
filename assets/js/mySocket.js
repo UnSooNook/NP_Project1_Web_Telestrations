@@ -1,5 +1,5 @@
 import { handleNewMessage } from "./chat";
-import { handleDrawThis, handleGameStart, handleGuessThis, handleNextTurn, handleTerminateGame } from "./gameManager";
+import { handleDrawThis, handleGameEnd, handleGameStart, handleGuessThis, handleNextTurn, handleTerminateGame, handleUpdatePage } from "./gameManager";
 import { handleByePlayer, handleHelloPlayer } from "./logIn";
 import { handleUpdatePlayer, handleLeaderNotif } from "./players";
 
@@ -33,4 +33,6 @@ export const initMySocket = ( aSocket ) => {
 	socket.on(events.nextTurn, handleNextTurn);
 	socket.on(events.drawThis, handleDrawThis);
 	socket.on(events.guessThis, handleGuessThis);
+	socket.on(events.gameEnd, handleGameEnd);
+	socket.on(events.updatePage, handleUpdatePage)
 };

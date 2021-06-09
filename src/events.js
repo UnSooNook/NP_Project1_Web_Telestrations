@@ -17,7 +17,10 @@ const events = {
 	letMeDraw: "letMeDraw",
 	letMeGuess: "letMeGuess",
 	drawThis: "drawThis",
-	guessThis: "guessThis"
+	guessThis: "guessThis",
+	gameEnd: "gameEnd",
+	updatePageNum: "updatePageNum",
+	updatePage: "updatePage"
 };
 
 export default events;
