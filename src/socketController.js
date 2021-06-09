@@ -184,6 +184,7 @@ const socketController = (socket, io) => {
             message: `${socket.nickname}님이 방장이 되었습니다.`,
             messageColor: "green",
         });
+        updatePlayer();
         console.log("leaderConfirm", socket.nickname);
     });
 
