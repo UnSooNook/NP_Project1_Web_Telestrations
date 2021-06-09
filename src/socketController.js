@@ -18,7 +18,6 @@ let gameTurn = -1;
 // 게임이 끝나는 턴
 let finalTurn = -1;
 
-
 // 소켓 이벤트 처리
 const socketController = (socket, io) => {
     // 나를 제외하고 broadcast
@@ -40,8 +39,7 @@ const socketController = (socket, io) => {
     // sockets에서 targetID 소캣의 index 리턴
     const whereAmI = (targetID) => {
         const me = sockets.find((aSocket) => {
-            if (aSocket.id === targetID)
-                return true;
+            if (aSocket.id === targetID) return true;
         });
         return sockets.indexOf(me);
     };
@@ -73,7 +71,10 @@ const socketController = (socket, io) => {
             sockets[i].ready = false;
             finalTurn = Math.floor(sockets.length / 2) * 2;
             console.log(`${sockets[i].nickname} : ${words[i]}`);
-            sendTo(sockets[i].id, events.gameStart, { word: words[i], maxTurn: finalTurn });
+            sendTo(sockets[i].id, events.gameStart, {
+                word: words[i],
+                maxTurn: finalTurn,
+            });
         }
         updatePlayer();
         console.log("gameStart! 진행되는 턴:", finalTurn);
@@ -122,13 +123,21 @@ const socketController = (socket, io) => {
         console.log("logIn", nickname, socket.id);
         // 소캣 초기화
         socket.nickname = nickname;
+        socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16);
         socket.ready = false;
         socket.leader = false;
         // sockets 반영
-        sockets = sockets.filter(aSocket => aSocket.nickname !== socket.nickname);
-        sockets.push({id: socket.id, nickname: nickname, leader: socket.leader, ready: socket.ready});
-        if (sockets.length === 1)
-            changeLeader(socket.id);
+        sockets = sockets.filter(
+            (aSocket) => aSocket.nickname !== socket.nickname
+        );
+        sockets.push({
+            id: socket.id,
+            nickname: nickname,
+            leader: socket.leader,
+            ready: socket.ready,
+            color: socket.color,
+        });
+        if (sockets.length === 1) changeLeader(socket.id);
         // 새 플레이어 알림
         superBroadcast(events.helloPlayer, { nickname });
         // 플레이어 정보 업데이트
@@ -139,32 +148,33 @@ const socketController = (socket, io) => {
     socket.on(events.logOut, () => {
         console.log("logOut", socket.nickname);
         // sockets에서 제거
-        sockets = sockets.filter(aSocket => aSocket.id !== socket.id);
+        sockets = sockets.filter((aSocket) => aSocket.id !== socket.id);
         // 방장이었으면 방장 재설정
         if (leader) {
             if (socket.id === leader) {
-                if (sockets.length >= 1)
-                    changeLeader(sockets[0].id);
-                else
-                    changeLeader(null);
+                if (sockets.length >= 1) changeLeader(sockets[0].id);
+                else changeLeader(null);
             }
         }
         // 준비중이었을 때 처리
-        if (socket.ready)
-            readyCount--;
+        if (socket.ready) readyCount--;
         // 게임중이었다면 게임 종료
-        if (inPlaying)
-            terminateGame();
-            // 플레이어 나감 알림
+        if (inPlaying) terminateGame();
+        // 플레이어 나감 알림
         broadcast(events.byePlayer, { nickname: socket.nickname });
         // 플레이어 정보 업데이트
         updatePlayer();
     });
 
     // 플레이어가 메시지를 보낼 때
-    socket.on(events.sendMessage, ({ message }) => {
+    socket.on(events.sendMessage, ({ message, messageColor }) => {
         // 다른 플레이어들에게 메시지 전송
-        superBroadcast(events.newMessage, { nickname: socket.nickname, message });
+        superBroadcast(events.newMessage, {
+            name: socket.nickname,
+            nameColor: socket.color,
+            message,
+            messageColor,
+        });
         console.log("sendMessage", message);
     });
 
@@ -175,6 +185,11 @@ const socketController = (socket, io) => {
         const leaderIndex = whereAmI(leader);
         sockets[leaderIndex].leader = true;
         sockets[leaderIndex].ready = false;
+        superBroadcast(events.newMessage, {
+            message: `${socket.nickname}님이 방장이 되었습니다.`,
+            messageColor: "green",
+        });
+        updatePlayer();
         console.log("leaderConfirm", socket.nickname);
     });
 
@@ -182,7 +197,7 @@ const socketController = (socket, io) => {
     socket.on(events.lobbyReady, ({ ready }) => {
         // 방장이 시작 버튼을 눌렀을 때 준비가 됐으면 게임 시작
         if (socket.id === leader) {
-            if ((sockets.length >= 2) && (readyCount === sockets.length - 1)) {
+            if (sockets.length >= 2 && readyCount === sockets.length - 1) {
                 ready = true;
                 // TODO: 게임 시작
                 gameStart();
@@ -191,8 +206,7 @@ const socketController = (socket, io) => {
                 ready = false;
                 console.log("lobbyReady: game start fail...");
             }
-        }
-        else {
+        } else {
             if (ready) {
                 readyCount++;
             } else {
@@ -214,15 +228,15 @@ const socketController = (socket, io) => {
         const myIndex = whereAmI(socket.id);
         let targetIndex = null;
         // 플레이어가 홀수일 때
-        if ((gameTurn === 0) || (finalTurn !== sockets.length))
-            targetIndex = (myIndex + gameTurn) % sockets.length
+        if (gameTurn === 0 || finalTurn !== sockets.length)
+            targetIndex = (myIndex + gameTurn) % sockets.length;
         // 플레이어가 짝수일 때
         else
-            targetIndex = (myIndex + gameTurn + sockets.length - 1) % sockets.length
+            targetIndex =
+                (myIndex + gameTurn + sockets.length - 1) % sockets.length;
         if (sockets[myIndex].ready) {
             sketchBook[targetIndex].history[gameTurn] = data;
-        }
-        else {
+        } else {
             readyCount++;
             sketchBook[targetIndex].history.push(data);
             sockets[myIndex].ready = true;
@@ -240,11 +254,12 @@ const socketController = (socket, io) => {
         const myIndex = whereAmI(socket.id);
         let targetIndex = null;
         // 플레이어가 홀수일 때
-        if ((gameTurn === 0) || (finalTurn !== sockets.length))
-            targetIndex = (myIndex + gameTurn) % sockets.length
+        if (gameTurn === 0 || finalTurn !== sockets.length)
+            targetIndex = (myIndex + gameTurn) % sockets.length;
         // 플레이어가 짝수일 때
         else
-            targetIndex = (myIndex + gameTurn + sockets.length - 1) % sockets.length
+            targetIndex =
+                (myIndex + gameTurn + sockets.length - 1) % sockets.length;
         const data = sketchBook[targetIndex].history[gameTurn - 1];
         sendTo(socket.id, events.drawThis, { word: data });
         console.log("letMeDraw - 그릴 단어:", data);
@@ -255,11 +270,12 @@ const socketController = (socket, io) => {
         const myIndex = whereAmI(socket.id);
         let targetIndex = null;
         // 플레이어가 홀수일 때
-        if ((gameTurn === 0) || (finalTurn !== sockets.length))
-            targetIndex = (myIndex + gameTurn) % sockets.length
+        if (gameTurn === 0 || finalTurn !== sockets.length)
+            targetIndex = (myIndex + gameTurn) % sockets.length;
         // 플레이어가 짝수일 때
         else
-            targetIndex = (myIndex + gameTurn + sockets.length - 1) % sockets.length
+            targetIndex =
+                (myIndex + gameTurn + sockets.length - 1) % sockets.length;
         const data = sketchBook[targetIndex].history[gameTurn - 1];
         sendTo(socket.id, events.guessThis, { drawing: data });
         console.log("letMeGuess - 맞출 그림:", data);

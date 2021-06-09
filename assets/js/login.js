@@ -9,18 +9,18 @@ const NICKNAME = "nickname";
 let nickname = localStorage.getItem(NICKNAME);
 
 // 새로 로그인했거나 이미 nickname 정보가 있을 경우
-const logIn = ( nickname ) => {
-	// 소캣 생성
-	const socket = io("/");
-	// 서버에 등록
-	socket.emit(window.events.logIn, { nickname });
-	// 소캣 이벤트 리스너 추가
-	initMySocket(socket);
+const logIn = (nickname) => {
+    // 소캣 생성
+    const socket = io("/");
+    // 서버에 등록
+    socket.emit(window.events.logIn, { nickname });
+    // 소캣 이벤트 리스너 추가
+    initMySocket(socket);
 };
 
 const handleLogInSubmit = (e) => {
-	e.preventDefault();
-	const input = loginForm.querySelector("input");
+    e.preventDefault();
+    const input = loginForm.querySelector("input");
     const { value } = input;
     input.value = "";
     // 닉네임 Local Storage에 저장
@@ -30,18 +30,24 @@ const handleLogInSubmit = (e) => {
     mainContainer.classList.remove("hidden");
     nickname = value;
 
-	logIn(nickname);
+    logIn(nickname);
 };
 
 // 새 플레이어 로그인 시 팝업 알림
 export const handleHelloPlayer = ({ nickname }) => {
-	shootChat(`${nickname} just joined!`, "white");
+    shootChat({
+        message: `${nickname}님이 입장하였습니다.`,
+        messageColor: "green",
+    });
     console.log("notifications - hello", nickname);
 };
 
 // 플레이어 로그아웃 시 팝업 알림
 export const handleByePlayer = ({ nickname }) => {
-	shootChat(`${nickname} just left!`, "red");
+    shootChat({
+        message: `${nickname}님이 나갔습니다.`,
+        messageColor: "green",
+    });
     console.log("notifications - hello", nickname);
 };
 

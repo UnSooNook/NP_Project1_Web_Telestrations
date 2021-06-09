@@ -1,53 +1,69 @@
 .chat__container {
-    background-color: slategray;
     height: 100%;
     width: 25%;
     .chat__players__div {
-        background-color: bisque;
         height: 7.5%;
         width: 100%;
+        display: flex;
+        align-items: flex-end;
+        padding-bottom: 1rem;
+        .players {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            span {
+                margin-right: -0.5rem;
+            }
+            div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 3rem;
+                width: 3rem;
+                background-color: red;
+                margin-right: -0.5rem;
+                border-radius: 50%;
+            }
+        }
     }
     .chat__list__div {
-        background-color: white;
         height: 92.5%;
         width: 100%;
-        padding: 1rem;
         .chat__view__div {
-            background: linear-gradient(gray, black);
+            background-color: white;
             height: 95%;
             width: 100%;
             padding: 1rem;
+            border-radius: 20px 20px 0 0;
             overflow: auto;
             -ms-overflow-style: none;
             scrollbar-width: none;
             &::-webkit-scrollbar {
                 display: none;
             }
-            p {
+            .messages {
+                display: flex;
                 margin-bottom: 0.5rem;
-                color: white;
+                span {
+                    margin-right: 0.5rem;
+                }
             }
         }
         .chat__form {
             height: 5%;
             width: 100%;
-            background-color: black;
-            padding: 0.1rem;
             input {
+                border-radius: 0 0 20px 20px;
+                padding: 1rem;
                 height: 100%;
                 width: 100%;
                 border: 0 white solid;
                 transition: all ease-in-out 0.3s;
                 &:hover {
-                    border-top: 2px white solid;
-                    border-bottom: 2px white solid;
-                    border-radius: 10px;
                 }
                 &:focus {
                     outline: none;
-                    border-top: 2px white solid;
-                    border-bottom: 2px white solid;
-                    border-radius: 10px;
                 }
             }
         }

@@ -1,34 +1,33 @@
-$input--outline--color: aqua;
-
 .login__container {
-    box-shadow: $boxShadow;
-    background: linear-gradient(rgb(228, 228, 228), rgb(202, 202, 202));
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: 40px;
     border-radius: 10px;
     .login__title {
         text-align: center;
-        font-size: 26px;
+        font-size: 100px;
         padding-bottom: 30px;
     }
     input {
+        text-align: center;
         margin-top: 20px;
-        width: 100%;
+        width: 20rem;
         padding: 10px;
-        border: 0;
-        background-color: $greyColor;
+        border-color: white;
+        border-radius: 50px !important;
         box-shadow: 0 2px 4px rgba(50, 50, 93, 0.1),
-            0 0 0 1px rgba(81, 87, 110, 0.16);
+            0 10px 10px rgba(81, 87, 110, 0.16) !important;
         border-radius: 5px;
         font-size: 14px;
         border: white 2px solid;
-        box-shadow: none;
         outline: none;
         transition: all ease-in-out 0.3s;
-        &:hover {
-            border: $input--outline--color 2px solid;
-        }
-        &:focus {
-            border: $input--outline--color 2px solid;
+        &:focus::placeholder {
+            visibility: hidden;
         }
     }
 }
