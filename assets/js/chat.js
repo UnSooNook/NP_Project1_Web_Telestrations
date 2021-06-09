@@ -9,26 +9,28 @@ export const shootChat = (text, color) => {
     chat.innerText = text;
     chat.style.color = color;
     chatListView.appendChild(chat);
+    console.log("shootChat", text);
 };
 
 // 채팅 소켓 이벤트 핸들러
 export const handleNewMessage = ({ nickname, message }) => {
     shootChat(`${nickname}: ${message}`, "white");
+    console.log("handleNewMessage", `${nickname}: ${message}`);
 };
 
 // 채팅 입력 후 엔터 키 이벤트 핸들러
-const handleSubmintChat = (e) => {
+const handleSubmitChat = (e) => {
     e.preventDefault();
     const input = chatForm.querySelector("input");
     const { value } = input;
     input.value = "";
-    const socket = getMySocket();
-    socket.emit(window.events.sendMessage, { message: value });
+    getMySocket().emit(window.events.sendMessage, { message: value });
+    console.log("handleSubmitChat", value);
 };
 
 // 채팅 Container 초기화
 const initChat = () => {
-    chatForm.addEventListener("submit", handleSubmintChat);
+    chatForm.addEventListener("submit", handleSubmitChat);
 };
 
 initChat();

@@ -28,34 +28,30 @@ export const handleByePlayer = ({ nickname }) => {
     shootChat(`${nickname} just left!`, "red");
 };
 
-// 닉네임 입력 후 엔터 이벤트 핸들러
-const handleLoginSubmit = (e) => {
-    e.preventDefault();
+const handleLogInSubmit = (e) => {
+	e.preventDefault();
     const input = loginForm.querySelector("input");
     const { value } = input;
     input.value = "";
     // 닉네임 Local Storage에 저장
     localStorage.setItem(NICKNAME, value);
+    loginContainer.classList.add("hidden");
+    mainContainer.classList.remove("hidden");
+    nickname = value;
 
-    initLogin();
+	logIn(nickname);
 };
 
-// 로그인 Container 초기화
-const initLogin = () => {
-    // Local Storage에서 닉네임 불러오기
-    nickname = localStorage.getItem(NICKNAME);
-    console.log(`nickname: ${nickname}`);
-
-    // 닉네임 설정이 되어 있는 경우 로비화면
-    if (nickname === null) {
-        // 닉네임 설정이 되어 있지 않은 경우 로그인 화면
-        loginForm.addEventListener("submit", handleLoginSubmit);
-    } else {
-        loginForm.removeEventListener("submit", handleLoginSubmit);
-        loginContainer.classList.add("hidden");
-        mainContainer.classList.remove("hidden");
-        logIn(nickname);
-    }
-};
-
-initLogin();
+// 창 설정 (로그인 창 / 게임 창)
+if (nickname === null) {
+    loginContainer.classList.remove("hidden");
+    mainContainer.classList.add("hidden");
+} else {
+    loginContainer.classList.add("hidden");
+    mainContainer.classList.remove("hidden");
+    logIn(nickname);
+}
+// 로그인 창 - 이벤트리스너
+if (loginForm) {
+    loginForm.addEventListener("submit", handleLogInSubmit);
+}
