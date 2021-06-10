@@ -23,7 +23,12 @@ export const shootChat = ({ name, nameColor, message, messageColor }) => {
 };
 
 // 플레이어가 보낸 메시지 처리
-export const handleNewMessage = ({ name, nameColor, message, messageColor }) => {
+export const handleNewMessage = ({
+    name,
+    nameColor,
+    message,
+    messageColor,
+}) => {
     shootChat({ name, nameColor, message, messageColor });
     console.log("handleNewMessage", `${name}: ${message}`);
 };
@@ -39,11 +44,13 @@ const handleSendMessage = (e) => {
     e.preventDefault();
     const input = chatForm.querySelector("input");
     const { value } = input;
-    const me = getMySocket();
-    me.emit(window.events.sendMessage, { message: value });
-    shootChat({ name: me.nickname, nameColor: me.color, message: value });
-    input.value = "";
-    console.log("handleSendMessage", value);
+    if (value !== "") {
+        const me = getMySocket();
+        me.emit(window.events.sendMessage, { message: value });
+        shootChat({ name: me.nickname, nameColor: me.color, message: value });
+        input.value = "";
+        console.log("handleSendMessage", value);
+    }
 };
 
 if (chatForm) chatForm.addEventListener("submit", handleSendMessage);

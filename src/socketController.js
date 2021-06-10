@@ -50,10 +50,9 @@ const socketController = (socket, io) => {
     const updateReadyCount = () => {
         readyCount = 0;
         sockets.forEach((player) => {
-            if (player.ready)
-                readyCount++;
+            if (player.ready) readyCount++;
         });
-    }
+    };
     // 방장이 변경될 때 클라이언트 소캣에게 알림
     const changeLeader = (leaderSocketID) => {
         leader = leaderSocketID;
@@ -61,7 +60,7 @@ const socketController = (socket, io) => {
         if (leader) {
             sendTo(leaderSocketID, events.leaderNotif, {});
             const myIndex = whereAmI(leader);
-            if ((myIndex > -1) && (sockets[myIndex].ready)) {
+            if (myIndex > -1 && sockets[myIndex].ready) {
                 sockets[myIndex].ready = false;
             }
         }
@@ -144,7 +143,8 @@ const socketController = (socket, io) => {
             console.log("logIn", nickname, socket.id);
             // 소캣 초기화
             socket.nickname = nickname;
-            socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정
+            socket.color =
+                "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정
             socket.ready = false;
             socket.leader = false;
             // sockets 반영
@@ -259,7 +259,12 @@ const socketController = (socket, io) => {
             sockets[myIndex].ready = ready;
             // 플레이어 정보 업데이트
             updatePlayer();
-            console.log("lobbyReady:", socket.nickname, socket.ready, readyCount);
+            console.log(
+                "lobbyReady:",
+                socket.nickname,
+                socket.ready,
+                readyCount
+            );
         }
     };
     // 플레이어가 제출했을 때 처리 함수
@@ -276,7 +281,8 @@ const socketController = (socket, io) => {
                 // 플레이어가 짝수일 때
                 else
                     targetIndex =
-                        (myIndex + gameTurn + sockets.length - 1) % sockets.length;
+                        (myIndex + gameTurn + sockets.length - 1) %
+                        sockets.length;
                 if (sockets[myIndex].ready) {
                     sketchBook[targetIndex].history[gameTurn] = data;
                 } else {
@@ -356,7 +362,7 @@ const socketController = (socket, io) => {
     // 리뷰창에서 페이지가 넘어갈 때
     socket.on(events.updatePageNum, handleUpdatePageNumS);
     // 게임 종료 이벤트 처리
-    socket.on(events.terminateGame, handleTerminateGameS)
+    socket.on(events.terminateGame, handleTerminateGameS);
 };
 
 export default socketController;

@@ -15,11 +15,14 @@ export const handleUpdatePlayer = ({ sockets }) => {
     sockets.map((socket) => {
         const playerDiv = document.createElement("div");
         playerDiv.className = "players";
-        const isLeader = document.createElement("span");
+        const isLeader = document.createElement("i");
+        isLeader.classList.add("fas");
         if (socket.leader) {
-            isLeader.innerHTML = "방장";
+            isLeader.classList.add("fa-crown");
+            isLeader.style.color = "orange";
         } else if (socket.ready) {
-            isLeader.innerHTML = "준비";
+            isLeader.classList.add("fa-check");
+            isLeader.style.color = "green";
         }
         const nameDiv = document.createElement("div");
         if (socket.nickname.length === 1)

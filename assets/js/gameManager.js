@@ -2,6 +2,7 @@ import { getMySocket } from "./mySocket";
 
 const readyBtn = document.querySelector(".canvas__btn__ready");
 const submitBtn = document.querySelector(".canvas__btn__submit");
+const modifyBtn = document.querySelector(".canvas__btn__modify");
 const helpContainer = document.querySelector(".help__container");
 const modContainer = [
     document.querySelector(".mod0__container"),
@@ -60,6 +61,34 @@ const enableModView = (number) => {
     modContainer[number].classList.remove("hidden");
 };
 
+// 각 모드에 맞는 수정 버튼 핸들러
+const handleGameSubmitModify = [
+    // mod 0
+    () => {
+        const submitWord = modContainer[0].querySelector(".submitWord");
+        const form = modContainer[0].querySelector("form");
+        form.classList.remove("hidden");
+        submitBtn.classList.remove("hidden");
+        modifyBtn.classList.add("hidden");
+        submitWord.classList.add("hidden");
+    },
+    // mod 1
+    () => {
+        // TODO: active canvas
+        submitBtn.classList.remove("hidden");
+        modifyBtn.classList.add("hidden");
+    },
+    // mod 2
+    () => {
+        const submitWord = modContainer[2].querySelector(".submitWord");
+        const form = modContainer[2].querySelector("form");
+        form.classList.remove("hidden");
+        submitBtn.classList.remove("hidden");
+        modifyBtn.classList.add("hidden");
+        submitWord.classList.add("hidden");
+    },
+];
+
 // 각 모드에 맞는 Submit 핸들러
 // 제출 버튼 또는 엔터키 이벤트 처리
 const handleGameSubmit = [
@@ -70,12 +99,14 @@ const handleGameSubmit = [
         const form = modContainer[0].querySelector("form");
         const input = form.querySelector("input");
         const { value } = input;
-        input.value = "";
-        submitWord.querySelector(".word").innerHTML = value;
-        form.classList.add("hidden");
-        submitBtn.classList.add("hidden");
-        submitWord.classList.remove("hidden");
-        gameSubmit(value);
+        if (value !== "") {
+            submitWord.querySelector(".word").innerHTML = value;
+            form.classList.add("hidden");
+            submitBtn.classList.add("hidden");
+            modifyBtn.classList.remove("hidden");
+            submitWord.classList.remove("hidden");
+            gameSubmit(value);
+        }
     },
     // mod 1
     (e) => {
@@ -83,6 +114,7 @@ const handleGameSubmit = [
         // TODO: get canvas data
         const drawing = "그림";
         submitBtn.classList.add("hidden");
+        modifyBtn.classList.remove("hidden");
         gameSubmit(drawing);
     },
     // mod 2
@@ -92,12 +124,14 @@ const handleGameSubmit = [
         const form = modContainer[2].querySelector("form");
         const input = form.querySelector("input");
         const { value } = input;
-        input.value = "";
-        submitWord.querySelector(".word").innerHTML = value;
-        form.classList.add("hidden");
-        submitBtn.classList.add("hidden");
-        submitWord.classList.remove("hidden");
-        gameSubmit(value);
+        if (value !== "") {
+            submitWord.querySelector(".word").innerHTML = value;
+            form.classList.add("hidden");
+            submitBtn.classList.add("hidden");
+            modifyBtn.classList.remove("hidden");
+            submitWord.classList.remove("hidden");
+            gameSubmit(value);
+        }
     },
 ];
 
@@ -113,6 +147,8 @@ const deactiveMod = [
         form.removeEventListener("submit", handleGameSubmit[0]);
         submitBtn.classList.remove("hidden");
         submitBtn.removeEventListener("click", handleGameSubmit[0]);
+        modifyBtn.classList.add("hidden");
+        modifyBtn.removeEventListener("click", handleGameSubmitModify[0]);
         const submitWord = modContainer[0].querySelector(".submitWord");
         submitWord.classList.add("hidden");
     },
@@ -122,6 +158,8 @@ const deactiveMod = [
         // TODO: canvas deactive
         submitBtn.classList.remove("hidden");
         submitBtn.removeEventListener("click", handleGameSubmit[1]);
+        modifyBtn.classList.add("hidden");
+        modifyBtn.removeEventListener("click", handleGameSubmitModify[1]);
     },
     // mod 2
     () => {
@@ -131,6 +169,8 @@ const deactiveMod = [
         form.removeEventListener("submit", handleGameSubmit[2]);
         submitBtn.classList.remove("hidden");
         submitBtn.removeEventListener("click", handleGameSubmit[2]);
+        modifyBtn.classList.add("hidden");
+        modifyBtn.removeEventListener("click", handleGameSubmitModify[2]);
         const submitWord = modContainer[2].querySelector(".submitWord");
         submitWord.classList.add("hidden");
     },
@@ -143,13 +183,16 @@ const activeMod = [
         modContainer[0].querySelector(".word").innerHTML = word;
         const form = modContainer[0].querySelector("form");
         form.addEventListener("submit", handleGameSubmit[0]);
+        form.querySelector("input").value = word;
         submitBtn.addEventListener("click", handleGameSubmit[0]);
+        modifyBtn.addEventListener("click", handleGameSubmitModify[0]);
     },
     // mod 1
     (word) => {
         modContainer[1].querySelector(".word").innerHTML = word;
         // TODO: canvas active
         submitBtn.addEventListener("click", handleGameSubmit[1]);
+        modifyBtn.addEventListener("click", handleGameSubmitModify[1]);
     },
     // mod 2
     (drawing) => {
@@ -157,6 +200,7 @@ const activeMod = [
         const form = modContainer[2].querySelector("form");
         form.addEventListener("submit", handleGameSubmit[2]);
         submitBtn.addEventListener("click", handleGameSubmit[2]);
+        modifyBtn.addEventListener("click", handleGameSubmitModify[2]);
     },
 ];
 
