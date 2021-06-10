@@ -3,6 +3,24 @@ import { getMySocket } from "./mySocket";
 const chatForm = document.querySelector(".chat__form");
 const chatListView = document.querySelector(".chat__view__div");
 
+// 채팅 기능 활성화
+export const enableChat = (flag) => {
+    const input = chatForm.querySelector("input");
+    input.value = "";
+    if (flag) {
+        input.disabled = false;
+        input.placeholder = "메시지 입력";
+    } else {
+        input.disabled = true;
+        input.placeholder = "지금은 채팅을 할 수 없습니다.";
+    }
+};
+
+// 모든 채팅 지우기
+export const clearChat = () => {
+    chatListView.innerHTML = "";
+};
+
 // 채팅 띄우기
 export const shootChat = ({ name, nameColor, message, messageColor }) => {
     const messageDiv = document.createElement("div");

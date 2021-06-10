@@ -1,3 +1,4 @@
+import { clearChat, enableChat } from "./chat";
 import { getMySocket } from "./mySocket";
 
 const readyBtn = document.querySelector(".canvas__btn__ready");
@@ -225,6 +226,9 @@ const enableReviewView = () => {
         nextBtn.addEventListener("click", handleNextPage);
         exitBtn.addEventListener("click", handleBackToLobby);
     }
+    // 채팅 기능 활성화
+    clearChat();
+    enableChat(true);
 };
 
 // 리뷰 화면 컨텐츠 띄우기
@@ -256,6 +260,9 @@ export const handleGameStart = ({ word, maxTurn }) => {
     selectMod(currMode, word);
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
+    // 채팅 비활성화
+    clearChat();
+    enableChat(false);
     console.log("gameManager - gameStart!", word);
 };
 
@@ -273,7 +280,11 @@ export const handleTerminateGameNotif = ({}) => {
     timeRemaining = 0;
     currMode = -1;
     submit = false;
+    // 모든 게임 화면 지우기
     clearAllView();
+    // 채팅 활성화
+    clearChat();
+    enableChat(true);
     console.log("gameManager - terminateGame..");
 };
 

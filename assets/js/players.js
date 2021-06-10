@@ -33,6 +33,17 @@ export const handleUpdatePlayer = ({ sockets }) => {
         playerDiv.appendChild(nameDiv);
         playersDiv.appendChild(playerDiv);
     });
+    // 자신에 준비상태에 맞게 준비 버튼 글자 변경
+    if (!newMe.leader) {
+        if (newMe.ready) {
+            readyBtn.innerHTML = "준비 취소";
+        } else {
+            readyBtn.innerHTML = "준비";
+        }
+    } else {
+        // 방장인 경우 준비 버튼을 게임 시작 버튼 으로
+        readyBtn.innerHTML = "게임 시작";
+    }
     updateMySocket(newMe);
 };
 
@@ -43,8 +54,6 @@ export const handleLeaderNotif = ({}) => {
     console.log(me.nickname);
     me.emit(window.events.leaderConfirm, {});
     updateMySocket(me);
-    // 방장인 경우 준비 버튼을 게임 시작 버튼 으로
-    readyBtn.innerHTML = "게임 시작";
     console.log("players - leaderNotif", me.leader);
 };
 
@@ -56,10 +65,8 @@ const handleLobbyReady = (e) => {
     if (!me.leader) {
         if (me.ready) {
             console.log("준비 완료 >>> 대기");
-            readyBtn.innerHTML = "준비";
         } else {
             console.log("대기 >>> 준비 완료");
-            readyBtn.innerHTML = "준비 취소";
         }
     }
     me.emit(window.events.lobbyReady, { ready: me.ready });
