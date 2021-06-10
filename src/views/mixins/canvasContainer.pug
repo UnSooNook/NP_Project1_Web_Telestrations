@@ -23,7 +23,7 @@ mixin canvasContainer
                 span.word ㅇㅇㅇ
                 span 을(를) 그려주세요
             .canvas__div
-                canvas
+                canvas.canvas__draw
                 .canvas__controls
                     button.btn__clear.border 초기화
                     button(style="background-color:rgb(0, 0, 0)") 
@@ -37,7 +37,7 @@ mixin canvasContainer
                     button(style="background-color:rgb(88,86,214)")
         .container.mod2__container.hidden
             .canvas__div
-                canvas
+                .canvas__show
             form
                 input(placeholder="그림에 맞는 정답을 입력해주세요", type="text")
             .submitWord.hidden

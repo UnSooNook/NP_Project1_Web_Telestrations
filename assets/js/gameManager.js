@@ -1,5 +1,11 @@
 import { clearChat, enableChat } from "./chat";
 import { getMySocket } from "./mySocket";
+import {
+    clearCanvas,
+    disableCanvas,
+    enableCanvas,
+    getCanvasData,
+} from "./paint";
 
 const readyBtn = document.querySelector(".canvas__btn__ready");
 const submitBtn = document.querySelector(".canvas__btn__submit");
@@ -15,6 +21,7 @@ const prevBtn = document.querySelector(".review__btn__prev");
 const nextBtn = document.querySelector(".review__btn__next");
 const exitBtn = document.querySelector(".review__btn__exit");
 const gameTimerDiv = document.querySelector(".canvas__timer");
+const canvasShowDiv = document.querySelector(".canvas__show");
 
 // 게임 진행 중 여부
 let inPlaying = false;
@@ -39,7 +46,7 @@ let currMode = -1;
 // 제출 여부
 let submit = false;
 // 한 턴 당 제한 시간(초)
-const TIMELIMIT = 30;
+const TIMELIMIT = 60;
 
 // 화면에 표시되는 타이머 숫자 변경 함수
 const updateTimerDiv = (time) => {
@@ -84,7 +91,7 @@ const handleGameSubmitModify = [
     },
     // mod 1
     () => {
-        // TODO: active canvas
+        enableCanvas();
         submitBtn.classList.remove("hidden");
         modifyBtn.classList.add("hidden");
     },
@@ -122,10 +129,11 @@ const handleGameSubmit = [
     (e) => {
         e.preventDefault();
         // TODO: get canvas data
-        const drawing = "그림";
+        const drawingSVG = getCanvasData();
+        disableCanvas();
         submitBtn.classList.add("hidden");
         modifyBtn.classList.remove("hidden");
-        gameSubmit(drawing);
+        gameSubmit(drawingSVG);
     },
     // mod 2
     (e) => {
@@ -165,7 +173,8 @@ const deactiveMod = [
     // mod 1
     () => {
         modContainer[1].querySelector(".word").innerHTML = "";
-        // TODO: canvas deactive
+        clearCanvas();
+        disableCanvas();
         submitBtn.classList.remove("hidden");
         submitBtn.removeEventListener("click", handleGameSubmit[1]);
         modifyBtn.classList.add("hidden");
@@ -183,6 +192,7 @@ const deactiveMod = [
         modifyBtn.removeEventListener("click", handleGameSubmitModify[2]);
         const submitWord = modContainer[2].querySelector(".submitWord");
         submitWord.classList.add("hidden");
+        canvasShowDiv.innerHTML = "";
     },
 ];
 
@@ -200,13 +210,13 @@ const activeMod = [
     // mod 1
     (word) => {
         modContainer[1].querySelector(".word").innerHTML = word;
-        // TODO: canvas active
+        enableCanvas();
         submitBtn.addEventListener("click", handleGameSubmit[1]);
         modifyBtn.addEventListener("click", handleGameSubmitModify[1]);
     },
     // mod 2
-    (drawing) => {
-        // TODO: show drawing
+    (drawingSVG) => {
+        canvasShowDiv.innerHTML = drawingSVG;
         const form = modContainer[2].querySelector("form");
         form.addEventListener("submit", handleGameSubmit[2]);
         submitBtn.addEventListener("click", handleGameSubmit[2]);
@@ -331,7 +341,7 @@ const gameSubmit = (data) => {
     else if (currMode === 1) {
         console.log("gameManager - handleGameSubmit 그리기 제출");
         // TODO: 그림 가져오기
-        data = `${getMySocket().nickname}'s 그림`;
+        //data = `${getMySocket().nickname}'s 그림`;
     }
     // 그림 맞추기
     else {

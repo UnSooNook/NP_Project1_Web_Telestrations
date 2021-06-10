@@ -1,22 +1,33 @@
-import { getMySocket } from "./mySocket";
+import "./canvas2svg";
 
-const canvas = document.getElementById("jsCanvas");
-const controls = document.getElementById("jsControls");
+const canvas = document.querySelector(".canvas__draw");
 const ctx = canvas.getContext("2d");
-const colors = document.getElementsByClassName("jsColor");
-const mode = document.getElementById("jsMode");
+const controls = document.querySelector(".canvas__controls");
+const colorBtns = controls.querySelectorAll("button");
 
-const INITIAL_COLOR = "#2c2c2c";
-const CANVAS_SIZE = 700;
+const INITIAL_COLOR = "rgb(0, 0, 0)";
 
-canvas.width = CANVAS_SIZE;
-canvas.height = CANVAS_SIZE;
+const CANVAS_WIDTH = 1000;
+const CANVAS_HEIGHT = 500;
+
+// 나중에 SVG로 변환할 ctx
+const ctxSVG = new C2S(CANVAS_WIDTH, CANVAS_HEIGHT);
+
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
 
 ctx.fillStyle = "white";
-ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+ctxSVG.fillStyle = "white";
+ctxSVG.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+// 검정 활성화
+colorBtns[1].classList.add("clicked");
 ctx.strokeStyle = INITIAL_COLOR;
 ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5;
+ctxSVG.strokeStyle = INITIAL_COLOR;
+ctxSVG.fillStyle = INITIAL_COLOR;
+ctxSVG.lineWidth = 2.5;
 
 let painting = false;
 let filling = false;
@@ -32,6 +43,8 @@ const startPainting = () => {
 const beginPath = (x, y) => {
     ctx.beginPath();
     ctx.moveTo(x, y);
+    ctxSVG.beginPath();
+    ctxSVG.moveTo(x, y);
 };
 
 // 선 그리기 (색상 포함)
@@ -39,10 +52,14 @@ const strokePath = (x, y, color = null) => {
     let currentColor = ctx.strokeStyle;
     if (color !== null) {
         ctx.strokeStyle = color;
+        ctxSVG.strokeStyle = color;
     }
     ctx.lineTo(x, y);
     ctx.stroke();
     ctx.strokeStyle = currentColor;
+    ctxSVG.lineTo(x, y);
+    ctxSVG.stroke();
+    ctxSVG.strokeStyle = currentColor;
 };
 
 const onMouseMove = (event) => {
@@ -51,69 +68,39 @@ const onMouseMove = (event) => {
     // 그리기 시작
     if (!painting) {
         beginPath(x, y);
-        // 그리기 시작(나)
-        getMySocket().emit(window.events.beginPath, { x, y });
         // 그리는 중
     } else if (!filling) {
         strokePath(x, y);
-        // 그리기(나)
-        getMySocket().emit(window.events.strokePath, {
-            x,
-            y,
-            color: ctx.strokeStyle,
-        });
     }
+};
+
+export const clearCanvas = () => {
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.beginPath();
+    ctxSVG.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctxSVG.beginPath();
 };
 
 // 색상 변경 이벤트 처리
-const handleColorClick = (event) => {
-    const color = event.target.style.backgroundColor;
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-};
-
-// 그리기 / 채우기 선택 이벤트 처리
-function handleModeClick() {
-    if (filling === true) {
-        filling = false;
-        mode.innerText = "Fill";
+const handleColorClick = ({ target }) => {
+    // 초기화 버튼인 경우
+    if (target.innerHTML === "초기화") {
+        getCanvasData();
+        clearCanvas();
     } else {
-        filling = true;
-        mode.innerText = "Paint";
-    }
-}
-
-// 채우기 함수
-const fill = (color = null) => {
-    let currentColor = ctx.fillStyle;
-    if (color !== null) {
+        const color = target.style.backgroundColor;
+        ctx.strokeStyle = color;
         ctx.fillStyle = color;
-    }
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    ctx.fillStyle = currentColor;
-};
-
-// 채우기 이벤트 처리
-const handleCanvasClick = () => {
-    if (filling) {
-        fill();
-        getMySocket().emit(window.events.fill, { color: ctx.fillStyle });
+        ctxSVG.strokeStyle = color;
+        ctxSVG.fillStyle = color;
+        colorBtns.forEach((colorBtn) => colorBtn.classList.remove("clicked"));
+        target.classList.add("clicked");
     }
 };
 
 const handleCM = (event) => {
     event.preventDefault();
 };
-
-// 색상 선택 이벤트 추기
-Array.from(colors).forEach((color) =>
-    color.addEventListener("click", handleColorClick)
-);
-
-// 그리기 / 채우기 선택 이벤트 추가
-if (mode) {
-    mode.addEventListener("click", handleModeClick);
-}
 
 // 그리기 시작 이벤트
 export const handleBeganPath = ({ x, y }) => {
@@ -125,18 +112,12 @@ export const handleStrokedPath = ({ x, y, color }) => {
     strokePath(x, y, color);
 };
 
-// 채우기 이벤트
-export const handleFilled = ({ color }) => {
-    fill(color);
-};
-
 // 그리기 해제
 export const disableCanvas = () => {
     canvas.removeEventListener("mousemove", onMouseMove);
     canvas.removeEventListener("mousedown", startPainting);
     canvas.removeEventListener("mouseup", stopPainting);
     canvas.removeEventListener("mouseleave", stopPainting);
-    canvas.removeEventListener("click", handleCanvasClick);
 };
 
 // 그리기 적용
@@ -145,43 +126,17 @@ export const enableCanvas = () => {
     canvas.addEventListener("mousedown", startPainting);
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
-    canvas.addEventListener("click", handleCanvasClick);
 };
 
-// 그리기 툴 해제
-export const hideControls = () => {
-    controls.style.display = "flex";
-};
-
-// 그리기 툴 적용
-export const showControls = () => {
-    controls.style.display = "flex";
-};
-
-// 캔버스 초기화
-export const resetCanvas = () => {
-    fill("#FFFFFF");
+// Canvas 데이터를 svg로 저장
+export const getCanvasData = () => {
+    return ctxSVG.getSerializedSvg(true);
 };
 
 if (canvas) {
     canvas.addEventListener("contextmenu", handleCM);
-    hideControls();
-}
-
-const drawBtn = document.querySelector(".canvas__btn__draw");
-let draw = false;
-
-const toogleDraw = () => {
-    if (draw) {
-        disableCanvas();
-        drawBtn.innerHTML = "그리기 시작 (테스트)";
-    } else {
-        enableCanvas();
-        drawBtn.innerHTML = "그리기 종료 (테스트)";
-    }
-    draw = !draw;
-};
-
-if (drawBtn) {
-    drawBtn.addEventListener("click", toogleDraw);
+    colorBtns.forEach((colorBtn) => {
+        colorBtn.addEventListener("click", handleColorClick);
+    });
+    enableCanvas();
 }

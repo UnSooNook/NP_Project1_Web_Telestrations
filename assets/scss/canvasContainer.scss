@@ -93,16 +93,18 @@
             width: 100%;
             height: 75%;
             canvas {
-                height: 100%;
-                width: 100%;
+                //height: 100%;
+                //width: 100%;
+                height: 500px;
+                width: 1000px;
                 border: 1px rgb(129, 129, 129) solid;
                 border-radius: 2rem;
-                box-shadow: inset 0 5px 5px gray;
+                //box-shadow: inset 0 5px 5px gray;
             }
             .canvas__controls {
                 padding-left: 15%;
                 padding-right: 15%;
-                margin-top: 2rem;
+                margin-top: 1rem;
                 display: flex;
                 justify-content: space-evenly;
                 align-items: center;
@@ -125,6 +127,9 @@
                 .border {
                     border: 1px gray solid;
                 }
+                .clicked {
+                    transform: scale(0.8);
+                }
             }
         }
     }
@@ -136,17 +141,16 @@
             margin-top: 2rem;
             width: 100%;
             height: 75%;
-            canvas {
-                height: 100%;
-                width: 100%;
+            .canvas__show {
+                height: 500px;
+                width: 1000px;
                 border: 1px rgb(129, 129, 129) solid;
                 border-radius: 2rem;
-                box-shadow: inset 0 5px 5px gray;
             }
         }
         input {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 50px;
             width: 20rem;
             padding: 10px;
             border-radius: 50px !important;
@@ -165,7 +169,7 @@
             font-size: 2.5rem;
         }
         .submitWord {
-            margin-top: 20px;
+            margin-top: 50px;
         }
     }
     .canvas__btns {
