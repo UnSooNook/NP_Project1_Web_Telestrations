@@ -1,8 +1,37 @@
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(0deg);
+    }
+    75% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(180deg);
+    }
+}
+
 .canvas__container {
+    position: relative;
     height: 100%;
     width: 70%;
     padding: 2rem;
     padding-top: 5rem;
+    .canvas__timer {
+        position: absolute;
+        right: 3rem;
+        top: 6rem;
+        font-size: xx-large;
+        color: gray;
+        i {
+            padding-right: 0.5rem;
+            animation: spin 2s;
+            animation-iteration-count: infinite;
+            transform-origin: 37% 50%;
+        }
+    }
     .canvas,
     .chatMessages {
         background-color: white;

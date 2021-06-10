@@ -14,6 +14,7 @@ const reviewContainer = document.querySelector(".review__container");
 const prevBtn = document.querySelector(".review__btn__prev");
 const nextBtn = document.querySelector(".review__btn__next");
 const exitBtn = document.querySelector(".review__btn__exit");
+const gameTimerDiv = document.querySelector(".canvas__timer");
 
 // 게임 진행 중 여부
 let inPlaying = false;
@@ -40,9 +41,16 @@ let submit = false;
 // 한 턴 당 제한 시간(초)
 const TIMELIMIT = 30;
 
+// 화면에 표시되는 타이머 숫자 변경 함수
+const updateTimerDiv = (time) => {
+    const span = gameTimerDiv.querySelector("span");
+    span.innerHTML = time < 10 ? `0${time}` : time;
+};
+
 // 타이머 함수 (1초마다 반복)
 const handleTimer = () => {
     timeRemaining--;
+    updateTimerDiv(timeRemaining);
     console.log("timer:", timeRemaining);
     if (timeRemaining === 0) {
         console.log("Time Expired");
@@ -58,6 +66,9 @@ const enableModView = (number) => {
     submitBtn.classList.remove("hidden");
     modContainer.map((container) => container.classList.add("hidden"));
     modContainer[number].classList.remove("hidden");
+    // 타이머 시간 최대로
+    gameTimerDiv.querySelector("span").innerHTML =
+        TIMELIMIT < 10 ? `0${TIMELIMIT}` : TIMELIMIT;
 };
 
 // 각 모드에 맞는 수정 버튼 핸들러
@@ -217,6 +228,7 @@ const enableReviewView = () => {
     modifyBtn.classList.add("hidden");
     helpContainer.classList.add("hidden");
     modContainer.map((element) => element.classList.add("hidden"));
+    gameTimerDiv.classList.add("hidden");
     reviewContainer.classList.remove("hidden");
     // 방장인 경우에는 버튼 활성화
     if (getMySocket().leader) {
@@ -258,6 +270,7 @@ export const handleGameStart = ({ word, maxTurn }) => {
     finalTurn = maxTurn;
     currMode = 0;
     selectMod(currMode, word);
+    gameTimerDiv.classList.remove("hidden");
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
     // 채팅 비활성화
