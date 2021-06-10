@@ -38,6 +38,8 @@ export const shootChat = ({ name, nameColor, message, messageColor }) => {
     chat.style.color = messageColor;
     messageDiv.append(chat);
     chatListView.appendChild(messageDiv);
+    // 스크롤바 자동으로 내리기
+    chatListView.scrollTop = chatListView.scrollHeight;
 };
 
 // 플레이어가 보낸 메시지 처리
