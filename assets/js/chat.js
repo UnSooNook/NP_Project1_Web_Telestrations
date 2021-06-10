@@ -23,19 +23,15 @@ export const shootChat = ({ name, nameColor, message, messageColor }) => {
 };
 
 // 플레이어가 보낸 메시지 처리
-export const handleNewMessage = ({
-    name,
-    nameColor,
-    message,
-    messageColor,
-}) => {
-    shootChat({
-        name,
-        nameColor,
-        message,
-        messageColor,
-    });
+export const handleNewMessage = ({ name, nameColor, message, messageColor }) => {
+    shootChat({ name, nameColor, message, messageColor });
     console.log("handleNewMessage", `${name}: ${message}`);
+};
+
+// 서버가 보낸 메시지 처리
+export const handleServerMessage = ({ message, messageColor }) => {
+    shootChat({ message, messageColor });
+    console.log("handleServerMessage", `[SERVER] ${message}`);
 };
 
 // 채팅 입력후 엔터키 이벤트 리스너
@@ -43,7 +39,9 @@ const handleSendMessage = (e) => {
     e.preventDefault();
     const input = chatForm.querySelector("input");
     const { value } = input;
-    getMySocket().emit(window.events.sendMessage, { message: value });
+    const me = getMySocket();
+    me.emit(window.events.sendMessage, { message: value });
+    shootChat({ name: me.nickname, nameColor: me.color, message: value });
     input.value = "";
     console.log("handleSendMessage", value);
 };

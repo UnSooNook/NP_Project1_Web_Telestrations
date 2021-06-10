@@ -46,20 +46,24 @@ const handleLogInSubmit = (e) => {
 
 // 새 플레이어 로그인 시 채팅 알림
 export const handleHelloPlayer = ({ nickname }) => {
-    shootChat({
-        message: `${nickname}님이 입장하였습니다.`,
-        messageColor: "green",
-    });
-    console.log("notifications - hello", nickname);
+    if (nickname) {
+        shootChat({
+            message: `${nickname}님이 입장하였습니다.`,
+            messageColor: "green",
+        });
+        console.log("[SERVER] Hello,", nickname);
+    }
 };
 
 // 플레이어 로그아웃 시 채팅 알림
 export const handleByePlayer = ({ nickname }) => {
-    shootChat({
-        message: `${nickname}님이 나갔습니다.`,
-        messageColor: "green",
-    });
-    console.log("notifications - hello", nickname);
+    if (nickname) {
+        shootChat({
+            message: `${nickname}님이 나갔습니다.`,
+            messageColor: "green",
+        });
+        console.log("[SERVER] Bye,", nickname);
+    }
 };
 
 // 창 설정 (로그인 창 / 게임 창)

@@ -20,6 +20,7 @@ let finalTurn = -1;
 
 // 소켓 이벤트 처리
 const socketController = (socket, io) => {
+    /* 통신을 위한 함수 */
     // 나를 제외하고 broadcast
     const broadcast = (event, data) => {
         socket.broadcast.emit(event, data);
@@ -32,8 +33,11 @@ const socketController = (socket, io) => {
     const sendTo = (id, event, data) => {
         io.to(id).emit(event, data);
     };
+
+    /* 서버 및 게임 관리 함수 */
     // 플레이어 정보 업데이트 알림
     const updatePlayer = () => {
+        updateReadyCount();
         superBroadcast(events.updatePlayer, { sockets });
     };
     // sockets에서 targetID 소캣의 index 리턴
@@ -43,6 +47,13 @@ const socketController = (socket, io) => {
         });
         return sockets.indexOf(me);
     };
+    const updateReadyCount = () => {
+        readyCount = 0;
+        sockets.forEach((player) => {
+            if (player.ready)
+                readyCount++;
+        });
+    }
     // 방장이 변경될 때 클라이언트 소캣에게 알림
     const changeLeader = (leaderSocketID) => {
         leader = leaderSocketID;
@@ -50,9 +61,8 @@ const socketController = (socket, io) => {
         if (leader) {
             sendTo(leaderSocketID, events.leaderNotif, {});
             const myIndex = whereAmI(leader);
-            if (sockets[myIndex].ready) {
+            if ((myIndex > -1) && (sockets[myIndex].ready)) {
                 sockets[myIndex].ready = false;
-                readyCount--;
             }
         }
         console.log("changeLeader", leader);
@@ -87,6 +97,7 @@ const socketController = (socket, io) => {
     // 게임 완료
     const gameEnd = () => {
         console.log("gameEnd!");
+        inPlaying = false;
         superBroadcast(events.gameEnd, { finalSketchBook: sketchBook });
     };
     // 게임 초기화
@@ -102,14 +113,17 @@ const socketController = (socket, io) => {
         sockets.map((socket) => {
             socket.ready = false;
         });
+        superBroadcast(events.serverMessage, {
+            message: `게임이 종료되었습니다.`,
+            messageColor: "red",
+        });
         // 게임 종료 알리기
-        superBroadcast(events.terminateGame, {});
+        superBroadcast(events.terminateGameNotif, {});
         updatePlayer();
     };
     // 다음 턴 진행
     const nextTurn = () => {
         if (gameTurn === finalTurn) {
-            // TODO: 리뷰 창 넘어가기
             console.log("nextTurn - 게임 완료!");
             gameEnd();
             return;
@@ -123,35 +137,41 @@ const socketController = (socket, io) => {
         updatePlayer();
     };
 
-    // 클라이언트가 접속할 때 관리 및 알림
-    socket.on(events.logIn, ({ nickname }) => {
-        console.log("logIn", nickname, socket.id);
-        // 소캣 초기화
-        socket.nickname = nickname;
-        socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정
-        socket.ready = false;
-        socket.leader = false;
-        // sockets 반영
-        sockets = sockets.filter(
-            (aSocket) => aSocket.nickname !== socket.nickname
-        );
-        sockets.push({
-            id: socket.id,
-            nickname: nickname,
-            leader: socket.leader,
-            ready: socket.ready,
-            color: socket.color,
-        });
-        if (sockets.length === 1) changeLeader(socket.id);
-        // 새 플레이어 알림
-        superBroadcast(events.helloPlayer, { nickname });
+    /* 소캣 이벤트 처리 함수 */
+    // 플레이어가 접속할 때 관리 및 알림 처리 함수
+    const handleLogInS = ({ nickname }) => {
+        if (inPlaying === false) {
+            console.log("logIn", nickname, socket.id);
+            // 소캣 초기화
+            socket.nickname = nickname;
+            socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정
+            socket.ready = false;
+            socket.leader = false;
+            // sockets 반영
+            sockets = sockets.filter(
+                (aSocket) => aSocket.nickname !== socket.nickname
+            );
+            sockets.push({
+                id: socket.id,
+                nickname: nickname,
+                leader: socket.leader,
+                ready: socket.ready,
+                color: socket.color,
+            });
+            if (sockets.length === 1) changeLeader(socket.id);
+            // 새 플레이어 알림
+            superBroadcast(events.helloPlayer, { nickname });
+        } else {
+            console.log(`Player ${nickname} Logged In while Playing Game`);
+        }
         // 플레이어 정보 업데이트
         updatePlayer();
-    });
-
-    // 플레이어가 로그아웃 할 때 관리 및 알림
-    socket.on(events.logOut, () => {
+    };
+    // 플레이어가 로그아웃 할 때 관리 및 알림 처리 함수
+    const handleLogOutS = () => {
         console.log("logOut", socket.nickname);
+        const myIndex = whereAmI(socket.id);
+        if (myIndex === -1) return;
         // sockets에서 제거
         sockets = sockets.filter((aSocket) => aSocket.id !== socket.id);
         // 방장이었으면 방장 재설정
@@ -161,156 +181,182 @@ const socketController = (socket, io) => {
                 else changeLeader(null);
             }
         }
-        // 준비중이었을 때 처리
-        if (socket.ready) readyCount--;
         // 게임중이었다면 게임 종료
         if (inPlaying) terminateGame();
         // 플레이어 나감 알림
         broadcast(events.byePlayer, { nickname: socket.nickname });
         // 플레이어 정보 업데이트
         updatePlayer();
-    });
-
-    // 플레이어가 메시지를 보낼 때
-    socket.on(events.sendMessage, ({ message, messageColor }) => {
-        // 다른 플레이어들에게 메시지 전송
-        superBroadcast(events.newMessage, {
+    };
+    // 플레이어가 메시지를 보낼 때 처리 함수
+    const handleSendMessageS = ({ message, messageColor }) => {
+        // 플레이어들에게 메시지 전송
+        broadcast(events.newMessage, {
             name: socket.nickname,
             nameColor: socket.color,
             message,
             messageColor,
         });
         console.log(`sendMessage ${socket.nickname}: ${message}`);
-    });
-
-    // 방장이 변경될 때 서버의 방장 소캣에 반영
-    socket.on(events.leaderConfirm, ({}) => {
+    };
+    // 방장이 변경될 때 서버의 방장 소캣에 알림 처리 함수
+    const handleLeaderConfirmS = ({}) => {
         socket.leader = true;
         socket.ready = false;
         const leaderIndex = whereAmI(leader);
         sockets[leaderIndex].leader = true;
         sockets[leaderIndex].ready = false;
-        superBroadcast(events.newMessage, {
+        superBroadcast(events.serverMessage, {
             message: `${socket.nickname}님이 방장이 되었습니다.`,
             messageColor: "green",
         });
         // 플레이어 정보 업데이트
         updatePlayer();
         console.log("leaderConfirm", socket.nickname);
-    });
-
-    // 플레이어가 레디 버튼을 눌렀을 때
-    socket.on(events.lobbyReady, ({ ready }) => {
+    };
+    // 플레이어가 준비 버튼을 눌렀을 때 처리 함수
+    const handleLobbyReadyS = ({ ready }) => {
         // 방장이 시작 버튼을 눌렀을 때 준비가 됐으면 게임 시작
         if (socket.id === leader) {
             if (sockets.length >= 2 && readyCount === sockets.length - 1) {
+                inPlaying = true;
+                console.log("lobbyReady - gameStart");
                 ready = true;
-                // TODO: 게임 시작
                 // 게임 시작 채팅 알림 (5초 카운트)
                 let startCount = 5;
+                superBroadcast(events.serverMessage, {
+                    message: `게임이 곧 시작됩니다...${startCount}`,
+                    messageColor: "red",
+                });
                 const startTimer = setInterval(() => {
-                    superBroadcast(events.newMessage, {
+                    // 5초 후 게임 시작
+                    startCount--;
+                    if (startCount === -1 && startTimer) {
+                        clearInterval(startTimer);
+                        gameStart();
+                        return;
+                    }
+                    superBroadcast(events.serverMessage, {
                         message: `게임이 곧 시작됩니다...${startCount}`,
                         messageColor: "red",
                     });
-                    startCount = startCount - 1;
-                    // 5초 후 게임 시작
-                    if (startCount === 0 && startTimer) {
-                        clearInterval(startTimer);
-                        gameStart();
-                    }
                 }, 1000);
                 return;
             } else {
                 ready = false;
-                // 게임 시작 불가능 채팅 알림
-                superBroadcast(events.newMessage, {
+                // 게임 시작 방장에게 불가능 채팅 알림
+                sendTo(leader, events.serverMessage, {
                     message: `모든 플레이어가 준비하지 않아 게임을 시작할 수 없습니다.`,
                     messageColor: "red",
                 });
                 console.log("lobbyReady: game start fail...");
             }
-        } else {
-            if (ready) {
-                readyCount++;
-            } else {
-                readyCount--;
-            }
         }
         // sockets에 상태 반영 후 알림
         socket.ready = ready;
         const myIndex = whereAmI(socket.id);
-        sockets[myIndex].ready = ready;
-        // 플레이어 정보 업데이트
-        updatePlayer();
-        console.log("lobbyReady:", socket.nickname, socket.ready, readyCount);
-    });
-
-    // 플레이어가 제출했을 때
-    socket.on(events.gameSubmit, ({ data }) => {
-        socket.ready = true;
-        // 중복 제출인지 확인
-        const myIndex = whereAmI(socket.id);
-        let targetIndex = null;
-        // 플레이어가 홀수일 때
-        if (gameTurn === 0 || finalTurn !== sockets.length)
-            targetIndex = (myIndex + gameTurn) % sockets.length;
-        // 플레이어가 짝수일 때
-        else
-            targetIndex =
-                (myIndex + gameTurn + sockets.length - 1) % sockets.length;
-        if (sockets[myIndex].ready) {
-            sketchBook[targetIndex].history[gameTurn] = data;
-        } else {
-            readyCount++;
-            sketchBook[targetIndex].history.push(data);
-            sockets[myIndex].ready = true;
+        if (myIndex > -1) {
+            sockets[myIndex].ready = ready;
+            // 플레이어 정보 업데이트
             updatePlayer();
+            console.log("lobbyReady:", socket.nickname, socket.ready, readyCount);
         }
-        console.log(sketchBook);
-        if (readyCount === sockets.length) {
-            console.log("gameSubmit: 제출 완료!");
-            nextTurn();
+    };
+    // 플레이어가 제출했을 때 처리 함수
+    const handleGameSubmitS = ({ data }) => {
+        if (inPlaying) {
+            socket.ready = true;
+            // 중복 제출인지 확인
+            const myIndex = whereAmI(socket.id);
+            if (myIndex > -1) {
+                let targetIndex = null;
+                // 플레이어가 홀수일 때
+                if (gameTurn === 0 || finalTurn !== sockets.length)
+                    targetIndex = (myIndex + gameTurn) % sockets.length;
+                // 플레이어가 짝수일 때
+                else
+                    targetIndex =
+                        (myIndex + gameTurn + sockets.length - 1) % sockets.length;
+                if (sockets[myIndex].ready) {
+                    sketchBook[targetIndex].history[gameTurn] = data;
+                } else {
+                    sketchBook[targetIndex].history.push(data);
+                    sockets[myIndex].ready = true;
+                    updatePlayer();
+                }
+                console.log(sketchBook);
+                if (readyCount === sockets.length) {
+                    console.log("gameSubmit: 모두 제출 완료!");
+                    nextTurn();
+                }
+            }
         }
-    });
-
-    // 플레이어가 그릴 제시어를 요청할 때
-    socket.on(events.letMeDraw, ({}) => {
+    };
+    // 플레이어가 그림 제시어를 요청할 때 처리 함수
+    const handleLetMeDrawS = ({}) => {
         const myIndex = whereAmI(socket.id);
-        let targetIndex = null;
-        // 플레이어가 홀수일 때
-        if (gameTurn === 0 || finalTurn !== sockets.length)
-            targetIndex = (myIndex + gameTurn) % sockets.length;
-        // 플레이어가 짝수일 때
-        else
-            targetIndex =
-                (myIndex + gameTurn + sockets.length - 1) % sockets.length;
-        const data = sketchBook[targetIndex].history[gameTurn - 1];
-        sendTo(socket.id, events.drawThis, { word: data });
-        console.log("letMeDraw - 그릴 단어:", data);
-    });
-
-    // 플레이어가 맞출 그림을 요청할 때
-    socket.on(events.letMeGuess, ({}) => {
+        if (myIndex > -1) {
+            let targetIndex = null;
+            // 플레이어가 홀수일 때
+            if (gameTurn === 0 || finalTurn !== sockets.length)
+                targetIndex = (myIndex + gameTurn) % sockets.length;
+            // 플레이어가 짝수일 때
+            else
+                targetIndex =
+                    (myIndex + gameTurn + sockets.length - 1) % sockets.length;
+            const data = sketchBook[targetIndex].history[gameTurn - 1];
+            sendTo(socket.id, events.drawThis, { word: data });
+            console.log("letMeDraw - 그릴 단어:", data);
+        }
+    };
+    // 플레이어가 맞출 그림을 요청할 때 처리 함수
+    const handleLetMeGuessS = ({}) => {
         const myIndex = whereAmI(socket.id);
-        let targetIndex = null;
-        // 플레이어가 홀수일 때
-        if (gameTurn === 0 || finalTurn !== sockets.length)
-            targetIndex = (myIndex + gameTurn) % sockets.length;
-        // 플레이어가 짝수일 때
-        else
-            targetIndex =
-                (myIndex + gameTurn + sockets.length - 1) % sockets.length;
-        const data = sketchBook[targetIndex].history[gameTurn - 1];
-        sendTo(socket.id, events.guessThis, { drawing: data });
-        console.log("letMeGuess - 맞출 그림:", data);
-    });
-
-    // 페이지 업데이트 이벤트
-    socket.on(events.updatePageNum, ({ newPage }) => {
+        if (myIndex > -1) {
+            let targetIndex = null;
+            // 플레이어가 홀수일 때
+            if (gameTurn === 0 || finalTurn !== sockets.length)
+                targetIndex = (myIndex + gameTurn) % sockets.length;
+            // 플레이어가 짝수일 때
+            else
+                targetIndex =
+                    (myIndex + gameTurn + sockets.length - 1) % sockets.length;
+            const data = sketchBook[targetIndex].history[gameTurn - 1];
+            sendTo(socket.id, events.guessThis, { drawing: data });
+            console.log("letMeGuess - 맞출 그림:", data);
+        }
+    };
+    // 리뷰창에서 페이지가 넘어갈 때 처리함수
+    const handleUpdatePageNumS = ({ newPage }) => {
         console.log("updatePageNum:", newPage);
         superBroadcast(events.updatePage, { newPage: newPage });
-    });
+    };
+    // 게임이 종료될 때 처리 함수
+    const handleTerminateGameS = ({}) => {
+        terminateGame();
+    };
+
+    /* 소캣 이벤트 처리 함수 등록 */
+    // 플레이어가 접속할 때
+    socket.on(events.logIn, handleLogInS);
+    // 플레이어가 로그아웃 할 때
+    socket.on(events.logOut, handleLogOutS);
+    // 플레이어가 메시지를 보낼 때
+    socket.on(events.sendMessage, handleSendMessageS);
+    // 방장이 변경될 때
+    socket.on(events.leaderConfirm, handleLeaderConfirmS);
+    // 플레이어가 레디 버튼을 눌렀을 때
+    socket.on(events.lobbyReady, handleLobbyReadyS);
+    // 플레이어가 제출했을 때
+    socket.on(events.gameSubmit, handleGameSubmitS);
+    // 플레이어가 그릴 제시어를 요청할 때
+    socket.on(events.letMeDraw, handleLetMeDrawS);
+    // 플레이어가 맞출 그림을 요청할 때
+    socket.on(events.letMeGuess, handleLetMeGuessS);
+    // 리뷰창에서 페이지가 넘어갈 때
+    socket.on(events.updatePageNum, handleUpdatePageNumS);
+    // 게임 종료 이벤트 처리
+    socket.on(events.terminateGame, handleTerminateGameS)
 };
 
 export default socketController;

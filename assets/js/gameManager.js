@@ -12,6 +12,9 @@ const reviewContainer = document.querySelector(".review__container");
 const prevBtn = document.querySelector(".review__btn__prev");
 const nextBtn = document.querySelector(".review__btn__next");
 
+// 임시 추가 버튼 (home.pug에 있음)
+const backToLobbyBtn = document.getElementById("jsBackToLobby");
+
 // 게임 진행 중 여부
 let inPlaying = false;
 // 게임 스케치북
@@ -35,7 +38,7 @@ let currMode = -1;
 // 제출 여부
 let submit = false;
 // 한 턴 당 제한 시간(초)
-const TIMELIMIT = 10;
+const TIMELIMIT = 30;
 
 // 타이머 함수 (1초마다 반복)
 const handleTimer = () => {
@@ -175,6 +178,7 @@ const enableReviewView = () => {
     prevBtn.addEventListener("click", handlePrevPage);
     nextBtn.classList.remove("hidden");
     nextBtn.addEventListener("click", handleNextPage);
+    backToLobbyBtn.addEventListener("click", handleBackToLobby);
 };
 
 // 리뷰 화면 컨텐츠 띄우기
@@ -185,7 +189,7 @@ const activeReview = (data) => {
 
 // 게임 종료 후 View 초기화
 const clearAllView = () => {
-    // TODO : 모든 뷰 초기화
+    // TODO : 모든 뷰 초기화, 로비로 돌아가기
 };
 
 // 게임 시작 이벤트 처리
@@ -201,10 +205,17 @@ export const handleGameStart = ({ word, maxTurn }) => {
 };
 
 // 게임 초기화 이벤트 처리
-export const handleTerminateGame = ({}) => {
+export const handleTerminateGameNotif = ({}) => {
+    clearInterval(timer);
     inPlaying = false;
+    sketchBook = [];
+    sketchBookPage = 0;
+    finalPage = 0;
+    currPage = -1;
     gameTurn = -1;
     finalTurn = -1;
+    timer = null;
+    timeRemaining = 0;
     currMode = -1;
     submit = false;
     clearAllView();
@@ -235,7 +246,6 @@ const gameSubmit = (data) => {
     // 제시어
     if (currMode === 0) {
         console.log("gameManager - handleGameSubmit 제시어 제출");
-        // TODO: 제시어 가져오기
         // data = `${getMySocket().nickname}: 제시어`;
     }
     // 그리기
@@ -279,16 +289,18 @@ const pageUpdate = () => {
     else if (myPage % 2 === 1) currMode = 1;
     else currMode = 2;
     const player = Math.floor(currPage / sketchBookPage);
+    const sketchBookOwner = sketchBook[player].nickname;
     const data = sketchBook[player].history[myPage];
     // 리뷰화면 다시 그리기
     activeReview(data);
-    console.log("gameManager - pageUpdate:", player, myPage, data);
+    console.log("gameManager - pageUpdate:", sketchBookOwner, myPage, data);
 };
 
 // 게임이 완료되었을 때 리뷰창으로 넘어가기
 export const handleGameEnd = ({ finalSketchBook }) => {
     // 타이머 해제
     clearInterval(timer);
+    inPlaying = false;
     sketchBook = finalSketchBook;
     sketchBookPage = finalSketchBook[0].history.length;
     finalPage = finalSketchBook.length * finalSketchBook[0].history.length;
@@ -323,4 +335,11 @@ export const handleNextPage = (e) => {
         currPage++;
         getMySocket().emit(window.events.updatePageNum, { newPage: currPage });
     }
+};
+
+// 로비에서 나가기 버튼 이벤트 처리
+const handleBackToLobby = (e) => {
+    e.preventDefault();
+    getMySocket().emit(window.events.terminateGame, {});
+    console.log("gameManager - handleBackToLobby");
 };
