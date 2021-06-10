@@ -254,9 +254,30 @@ const enableReviewView = () => {
 };
 
 // 리뷰 화면 컨텐츠 띄우기
-const activeReview = (data) => {
-    reviewContainer.innerHTML = data;
-    // TODO : data로 화면 그리기
+const activeReview = (sketchBookOwner, myPage, data) => {
+    // 초기화
+    reviewContainer.innerHTML = "";
+
+    // "닉네임"의 스케치북 - page N
+    const reviewSpansDiv = document.createElement("div");
+    reviewSpansDiv.className = "review__spans";
+    const span1 = document.createElement("span");
+    span1.className = "review__nickname";
+    span1.innerHTML = sketchBookOwner;
+    const span2 = document.createElement("span");
+    span2.innerHTML = "의 스케치북 - page";
+    const span3 = document.createElement("span");
+    span3.className = "review__page";
+    span3.innerHTML = myPage + 1;
+    reviewSpansDiv.appendChild(span1);
+    reviewSpansDiv.appendChild(span2);
+    reviewSpansDiv.appendChild(span3);
+    reviewContainer.appendChild(reviewSpansDiv);
+    // 그림 또는 제시어
+    const dataDiv = document.createElement("div");
+    dataDiv.className = "review__data";
+    dataDiv.innerHTML = data;
+    reviewContainer.appendChild(dataDiv);
 };
 
 // 게임 종료 후 View 초기화
@@ -381,7 +402,7 @@ const pageUpdate = () => {
     const sketchBookOwner = sketchBook[player].nickname;
     const data = sketchBook[player].history[myPage];
     // 리뷰화면 다시 그리기
-    activeReview(data);
+    activeReview(sketchBookOwner, myPage, data);
     // 리더이고, 마지막 페이지인 경우 종료 버튼 활성화
     if (getMySocket().leader) {
         if (currPage === finalPage - 1) {

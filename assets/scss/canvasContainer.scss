@@ -172,6 +172,27 @@
             margin-top: 50px;
         }
     }
+    .review__container {
+        .review__spans {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            .review__nickname {
+                font-size: 2rem;
+            }
+            .review__page {
+                font-size: 1.5rem;
+            }
+        }
+        .review__data {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+        }
+    }
     .canvas__btns {
         display: flex;
         justify-content: space-evenly;
