@@ -52,14 +52,15 @@ export const handleLeaderNotif = ({}) => {
 const handleLobbyReady = (e) => {
     e.preventDefault();
     const me = getMySocket();
-    if (me.ready) {
-        me.ready = false;
-        console.log("준비 완료 >>> 대기");
-        readyBtn.innerHTML = "준비";
-    } else {
-        me.ready = true;
-        console.log("대기 >>> 준비 완료");
-        readyBtn.innerHTML = "준비 취소";
+    me.ready = !me.ready;
+    if (!me.leader) {
+        if (me.ready) {
+            console.log("준비 완료 >>> 대기");
+            readyBtn.innerHTML = "준비";
+        } else {
+            console.log("대기 >>> 준비 완료");
+            readyBtn.innerHTML = "준비 취소";
+        }
     }
     me.emit(window.events.lobbyReady, { ready: me.ready });
     updateMySocket(me);

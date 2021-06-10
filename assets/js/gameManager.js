@@ -12,9 +12,7 @@ const modContainer = [
 const reviewContainer = document.querySelector(".review__container");
 const prevBtn = document.querySelector(".review__btn__prev");
 const nextBtn = document.querySelector(".review__btn__next");
-
-// 임시 추가 버튼 (home.pug에 있음)
-const backToLobbyBtn = document.getElementById("jsBackToLobby");
+const exitBtn = document.querySelector(".review__btn__exit");
 
 // 게임 진행 중 여부
 let inPlaying = false;
@@ -215,14 +213,18 @@ const selectMod = (modNumber, data) => {
 const enableReviewView = () => {
     readyBtn.classList.add("hidden");
     submitBtn.classList.add("hidden");
+    modifyBtn.classList.add("hidden");
     helpContainer.classList.add("hidden");
     modContainer.map((element) => element.classList.add("hidden"));
     reviewContainer.classList.remove("hidden");
-    prevBtn.classList.remove("hidden");
-    prevBtn.addEventListener("click", handlePrevPage);
-    nextBtn.classList.remove("hidden");
-    nextBtn.addEventListener("click", handleNextPage);
-    backToLobbyBtn.addEventListener("click", handleBackToLobby);
+    // 방장인 경우에는 버튼 활성화
+    if (getMySocket().leader) {
+        prevBtn.classList.remove("hidden");
+        prevBtn.addEventListener("click", handlePrevPage);
+        nextBtn.classList.remove("hidden");
+        nextBtn.addEventListener("click", handleNextPage);
+        exitBtn.addEventListener("click", handleBackToLobby);
+    }
 };
 
 // 리뷰 화면 컨텐츠 띄우기
@@ -233,7 +235,16 @@ const activeReview = (data) => {
 
 // 게임 종료 후 View 초기화
 const clearAllView = () => {
-    // TODO : 모든 뷰 초기화, 로비로 돌아가기
+    deactiveMod.map((e) => e.call(this));
+    modContainer.map((e) => e.classList.add("hidden"));
+    reviewContainer.classList.add("hidden");
+    helpContainer.classList.remove("hidden");
+    submitBtn.classList.add("hidden");
+    modifyBtn.classList.add("hidden");
+    prevBtn.classList.add("hidden");
+    nextBtn.classList.add("hidden");
+    exitBtn.classList.add("hidden");
+    readyBtn.classList.remove("hidden");
 };
 
 // 게임 시작 이벤트 처리
@@ -311,7 +322,7 @@ const gameSubmit = (data) => {
 // 그릴 단어를 받았을 때
 export const handleDrawThis = ({ word }) => {
     console.log("gameManager - handleDrawThis:", word);
-    submit = false; // 내가 추가한건데 여기 들어가는 거 맞지?
+    // submit = false;
     selectMod(currMode, word);
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
@@ -320,7 +331,7 @@ export const handleDrawThis = ({ word }) => {
 // 맞출 단어를 받았을 때
 export const handleGuessThis = ({ drawing }) => {
     console.log("gameManager - handleGuessThis:", drawing);
-    submit = false; // 내가 추가한건데 여기 들어가는 거 맞지?
+    // submit = false;
     selectMod(currMode, drawing);
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
@@ -337,6 +348,16 @@ const pageUpdate = () => {
     const data = sketchBook[player].history[myPage];
     // 리뷰화면 다시 그리기
     activeReview(data);
+    // 리더이고, 마지막 페이지인 경우 종료 버튼 활성화
+    if (getMySocket().leader) {
+        if (currPage === finalPage - 1) {
+            nextBtn.classList.add("hidden");
+            exitBtn.classList.remove("hidden");
+        } else {
+            nextBtn.classList.remove("hidden");
+            exitBtn.classList.add("hidden");
+        }
+    }
     console.log("gameManager - pageUpdate:", sketchBookOwner, myPage, data);
 };
 
