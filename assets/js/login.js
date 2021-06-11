@@ -5,7 +5,7 @@ const loginContainer = document.querySelector(".login__container");
 const mainContainer = document.querySelector(".main__container");
 const loginForm = document.querySelector(".login__form");
 const NICKNAME = "nickname";
-// 내 닉네임
+// 내 닉네임 가져오기
 let nickname = localStorage.getItem(NICKNAME);
 
 // 로그인 화면을 숨기고 메인 화면 띄우기

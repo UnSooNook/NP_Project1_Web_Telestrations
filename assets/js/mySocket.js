@@ -29,7 +29,7 @@ export const updateMySocket = ( aSocket ) => {
 export const initMySocket = ( aSocket ) => {
 	const { events } = window;
 	socket = aSocket;
-	// 이벤트 리스너 추가
+	// 소켓 이벤트 리스너 추가
 	socket.on(events.updatePlayer, handleUpdatePlayer);
 	socket.on(events.helloPlayer, handleHelloPlayer);
 	socket.on(events.byePlayer, handleByePlayer);
