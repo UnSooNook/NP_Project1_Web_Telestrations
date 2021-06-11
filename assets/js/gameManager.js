@@ -291,6 +291,7 @@ const clearAllView = () => {
     nextBtn.classList.add("hidden");
     exitBtn.classList.add("hidden");
     readyBtn.classList.remove("hidden");
+    gameTimerDiv.classList.add("hidden");
 };
 
 // 게임 시작 이벤트 처리
