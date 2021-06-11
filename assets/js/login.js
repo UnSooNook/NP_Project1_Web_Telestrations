@@ -60,7 +60,7 @@ export const handleByePlayer = ({ nickname }) => {
     if (nickname) {
         shootChat({
             message: `${nickname}님이 나갔습니다.`,
-            messageColor: "green",
+            messageColor: "lightBlue",
         });
         console.log("[SERVER] Bye,", nickname);
     }
