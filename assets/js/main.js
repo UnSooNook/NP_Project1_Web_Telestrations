@@ -1,4 +1,4 @@
-import "./logIn";
+import "./logInM";
 import "./players";
 import "./mySocket";
 import "./chat";
