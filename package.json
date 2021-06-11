@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev:server": "nodemon --exec babel-node src/server --ignore assets/ --ignore src/static/",
-    "dev:assets": "gulp watchFiles"
+    "dev:assets": "gulp watchFiles",
+    "build": "nodemon --exec babel-node src/server"
   },
   "repository": {
     "type": "git",
