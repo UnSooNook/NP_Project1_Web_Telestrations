@@ -108,6 +108,11 @@ const socketController = (socket, io) => {
             message: `게임이 종료되었습니다!`,
             messageColor: "green",
         });
+        readyCount = 0;
+        sockets.map((socket) => {
+            socket.ready = false;
+        });
+        updatePlayer();
     };
     // 게임 초기화
     const terminateGame = () => {

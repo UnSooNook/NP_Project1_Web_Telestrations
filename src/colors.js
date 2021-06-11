@@ -16,13 +16,17 @@ const colors = [
 export const chooseColors = (sockets) => {
     let color = "";
     let isOverlap = true;
+    const maxCheck = 500;
+    let checkCount = 0;
     // 색상 뽑기
-    while (isOverlap) {
+    while (isOverlap && (checkCount < maxCheck)) {
         color = colors[Math.floor(Math.random() * colors.length)];
         isOverlap = sockets.find((socket) => {
             if (socket.color === color)
                 return true;
         });
+        checkCount++;
     }
+    if (checkCount === maxCheck) color = colors[Math.floor(Math.random() * colors.length)];
     return color;
 };
