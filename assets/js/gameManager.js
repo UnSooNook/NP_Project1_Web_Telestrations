@@ -394,26 +394,28 @@ export const handleGuessThis = ({ drawing }) => {
 
 // 리뷰창 페이지 업데이트하기
 const pageUpdate = () => {
-    const myPage = currPage % sketchBookPage;
-    if (myPage === 0) currMode = 0;
-    else if (myPage % 2 === 1) currMode = 1;
-    else currMode = 2;
-    const player = Math.floor(currPage / sketchBookPage);
-    const sketchBookOwner = sketchBook[player].nickname;
-    const data = sketchBook[player].history[myPage];
-    // 리뷰화면 다시 그리기
-    activeReview(sketchBookOwner, myPage, data);
-    // 리더이고, 마지막 페이지인 경우 종료 버튼 활성화
-    if (getMySocket().leader) {
-        if (currPage === finalPage - 1) {
-            nextBtn.classList.add("hidden");
-            exitBtn.classList.remove("hidden");
-        } else {
-            nextBtn.classList.remove("hidden");
-            exitBtn.classList.add("hidden");
+    if (sketchBook.length !== 0) {
+        const myPage = currPage % sketchBookPage;
+        if (myPage === 0) currMode = 0;
+        else if (myPage % 2 === 1) currMode = 1;
+        else currMode = 2;
+        const player = Math.floor(currPage / sketchBookPage);
+        const sketchBookOwner = sketchBook[player].nickname;
+        const data = sketchBook[player].history[myPage];
+        // 리뷰화면 다시 그리기
+        activeReview(sketchBookOwner, myPage, data);
+        // 리더이고, 마지막 페이지인 경우 종료 버튼 활성화
+        if (getMySocket().leader) {
+            if (currPage === finalPage - 1) {
+                nextBtn.classList.add("hidden");
+                exitBtn.classList.remove("hidden");
+            } else {
+                nextBtn.classList.remove("hidden");
+                exitBtn.classList.add("hidden");
+            }
         }
+        console.log("gameManager - pageUpdate:", sketchBookOwner, myPage, data);
     }
-    console.log("gameManager - pageUpdate:", sketchBookOwner, myPage, data);
 };
 
 // 게임이 완료되었을 때 리뷰창으로 넘어가기

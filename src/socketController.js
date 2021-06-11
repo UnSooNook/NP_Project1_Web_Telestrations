@@ -104,15 +104,15 @@ const socketController = (socket, io) => {
         console.log("gameEnd!");
         inPlaying = false;
         superBroadcast(events.gameEnd, { finalSketchBook: sketchBook });
-        superBroadcast(events.serverMessage, {
-            message: `게임이 종료되었습니다!`,
-            messageColor: "green",
-        });
         readyCount = 0;
         sockets.map((socket) => {
             socket.ready = false;
         });
         updatePlayer();
+        superBroadcast(events.serverMessage, {
+            message: `게임이 종료되었습니다.`,
+            messageColor: "green",
+        });
     };
     // 게임 초기화
     const terminateGame = () => {
@@ -127,13 +127,13 @@ const socketController = (socket, io) => {
         sockets.map((socket) => {
             socket.ready = false;
         });
-        superBroadcast(events.serverMessage, {
-            message: `게임이 종료되었습니다.`,
-            messageColor: "red",
-        });
         // 게임 종료 알리기
         superBroadcast(events.terminateGameNotif, {});
         updatePlayer();
+        superBroadcast(events.serverMessage, {
+            message: `로비로 돌아갑니다.`,
+            messageColor: "red",
+        });
     };
     // 다음 턴 진행
     const nextTurn = () => {
