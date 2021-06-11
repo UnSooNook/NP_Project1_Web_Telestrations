@@ -46,7 +46,7 @@ let currMode = -1;
 // 제출 여부
 let submit = false;
 // 한 턴 당 제한 시간(초)
-const TIMELIMIT = 10;
+const TIMELIMIT = 60;
 
 // 화면에 표시되는 타이머 숫자 변경 함수
 const updateTimerDiv = (time) => {
