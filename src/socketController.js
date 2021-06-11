@@ -230,7 +230,7 @@ const socketController = (socket, io) => {
         sockets[leaderIndex].ready = false;
         superBroadcast(events.serverMessage, {
             message: `${socket.nickname}님이 방장이 되었습니다.`,
-            messageColor: "green",
+            messageColor: "orange",
         });
         // 플레이어 정보 업데이트
         updatePlayer();
