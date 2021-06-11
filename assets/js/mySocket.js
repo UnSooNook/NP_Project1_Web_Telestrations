@@ -1,6 +1,6 @@
 import { handleNewMessage, handleServerMessage } from "./chat";
 import { handleDrawThis, handleGameEnd, handleGameStart, handleGuessThis, handleNextTurn, handleTerminateGame, handleTerminateGameNotif, handleUpdatePage } from "./gameManager";
-import { handleByePlayer, handleHelloPlayer } from "./logInM";
+import { handleByePlayer, handleHelloPlayer } from "./logIn";
 import { handleUpdatePlayer, handleLeaderNotif } from "./players";
 
 // 내 정보 관리
