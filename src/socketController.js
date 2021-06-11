@@ -1,3 +1,4 @@
+import { chooseColors } from "./colors.js";
 import events from "./events.js";
 import { chooseWords } from "./words.js";
 
@@ -164,7 +165,8 @@ const socketController = (socket, io) => {
             console.log("logIn", nickname, socket.id);
             // 소캣 초기화
             socket.nickname = nickname;
-            socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정
+            // socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정\
+            socket.color = chooseColors(sockets);
             socket.ready = false;
             socket.leader = false;
             // sockets 반영
