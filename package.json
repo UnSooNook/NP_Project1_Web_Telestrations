@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Soonwook34/nomadcoders-study_guess-mine_test.git"
+    "url": "git+https://github.com/UnSooNook/NP_Project1_Web_Telestrations.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Soonwook34/nomadcoders-study_guess-mine_test/issues"
+    "url": "https://github.com/UnSooNook/NP_Project1_Web_Telestrations/issues"
   },
-  "homepage": "https://github.com/Soonwook34/nomadcoders-study_guess-mine_test#readme",
+  "homepage": "https://github.com/UnSooNook/NP_Project1_Web_Telestrations#readme",
   "dependencies": {
     "@babel/preset-env": "^7.14.4",
     "babelify": "^10.0.0",
