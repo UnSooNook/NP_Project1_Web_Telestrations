@@ -50,9 +50,10 @@ const socketController = (socket, io) => {
     const updateReadyCount = () => {
         readyCount = 0;
         sockets.forEach((player) => {
-            if (player.ready) readyCount++;
+            if (player.ready)
+                readyCount++;
         });
-    };
+    }
     // 방장이 변경될 때 클라이언트 소캣에게 알림
     const changeLeader = (leaderSocketID) => {
         leader = leaderSocketID;
@@ -60,7 +61,7 @@ const socketController = (socket, io) => {
         if (leader) {
             sendTo(leaderSocketID, events.leaderNotif, {});
             const myIndex = whereAmI(leader);
-            if (myIndex > -1 && sockets[myIndex].ready) {
+            if ((myIndex > -1) && (sockets[myIndex].ready)) {
                 sockets[myIndex].ready = false;
             }
         }
@@ -90,6 +91,10 @@ const socketController = (socket, io) => {
                 maxTurn: finalTurn,
             });
         }
+        superBroadcast(events.serverMessage, {
+            message: `주어진 제시어를 적어주세요. `,
+            messageColor: "green",
+        });
         updatePlayer();
         console.log("gameStart! 진행되는 턴:", finalTurn);
     };
@@ -98,6 +103,10 @@ const socketController = (socket, io) => {
         console.log("gameEnd!");
         inPlaying = false;
         superBroadcast(events.gameEnd, { finalSketchBook: sketchBook });
+        superBroadcast(events.serverMessage, {
+            message: `게임이 종료되었습니다!`,
+            messageColor: "green",
+        });
     };
     // 게임 초기화
     const terminateGame = () => {
@@ -133,6 +142,18 @@ const socketController = (socket, io) => {
             socket.ready = false;
         });
         superBroadcast(events.nextTurn, { currTurn: gameTurn });
+        if (gameTurn % 2) {
+            superBroadcast(events.serverMessage, {
+                message: `턴 ${gameTurn}/${finalTurn}\n그림을 그려주세요.`,
+                messageColor: "darkBlue",
+            });
+        }
+        else {
+            superBroadcast(events.serverMessage, {
+                message: `턴 ${gameTurn}/${finalTurn}\n그림을 맞춰주세요.`,
+                messageColor: "purple",
+            });
+        }
         updatePlayer();
     };
 
@@ -143,8 +164,7 @@ const socketController = (socket, io) => {
             console.log("logIn", nickname, socket.id);
             // 소캣 초기화
             socket.nickname = nickname;
-            socket.color =
-                "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정
+            socket.color = "#" + Math.round(Math.random() * 0xffffff).toString(16); // 플레이어 색상 랜덤 배정
             socket.ready = false;
             socket.leader = false;
             // sockets 반영
@@ -219,28 +239,30 @@ const socketController = (socket, io) => {
         // 방장이 시작 버튼을 눌렀을 때 준비가 됐으면 게임 시작
         if (socket.id === leader) {
             if (sockets.length >= 2 && readyCount === sockets.length - 1) {
-                inPlaying = true;
-                console.log("lobbyReady - gameStart");
-                ready = true;
-                // 게임 시작 채팅 알림 (5초 카운트)
-                let startCount = 5;
-                superBroadcast(events.serverMessage, {
-                    message: `게임이 곧 시작됩니다...${startCount}`,
-                    messageColor: "red",
-                });
-                const startTimer = setInterval(() => {
-                    // 5초 후 게임 시작
-                    startCount--;
-                    if (startCount === -1 && startTimer) {
-                        clearInterval(startTimer);
-                        gameStart();
-                        return;
-                    }
+                if (inPlaying === false) {
+                    inPlaying = true;
+                    console.log("lobbyReady - gameStart");
+                    ready = true;
+                    // 게임 시작 채팅 알림 (5초 카운트)
+                    let startCount = 5;
                     superBroadcast(events.serverMessage, {
                         message: `게임이 곧 시작됩니다...${startCount}`,
                         messageColor: "red",
                     });
-                }, 1000);
+                    const startTimer = setInterval(() => {
+                        // 5초 후 게임 시작
+                        startCount--;
+                        if (startCount === -1 && startTimer) {
+                            clearInterval(startTimer);
+                            gameStart();
+                            return;
+                        }
+                        superBroadcast(events.serverMessage, {
+                            message: `게임이 곧 시작됩니다...${startCount}`,
+                            messageColor: "red",
+                        });
+                    }, 1000);
+                }
                 return;
             } else {
                 ready = false;
@@ -259,12 +281,7 @@ const socketController = (socket, io) => {
             sockets[myIndex].ready = ready;
             // 플레이어 정보 업데이트
             updatePlayer();
-            console.log(
-                "lobbyReady:",
-                socket.nickname,
-                socket.ready,
-                readyCount
-            );
+            console.log("lobbyReady:", socket.nickname, socket.ready, readyCount);
         }
     };
     // 플레이어가 제출했을 때 처리 함수
@@ -281,8 +298,7 @@ const socketController = (socket, io) => {
                 // 플레이어가 짝수일 때
                 else
                     targetIndex =
-                        (myIndex + gameTurn + sockets.length - 1) %
-                        sockets.length;
+                        (myIndex + gameTurn + sockets.length - 1) % sockets.length;
                 if (sockets[myIndex].ready) {
                     sketchBook[targetIndex].history[gameTurn] = data;
                 } else {
@@ -290,7 +306,7 @@ const socketController = (socket, io) => {
                     sockets[myIndex].ready = true;
                     updatePlayer();
                 }
-                console.log(sketchBook);
+                console.log(`handleGameSubmitS: ${socket.nickname} 제출`);
                 if (readyCount === sockets.length) {
                     console.log("gameSubmit: 모두 제출 완료!");
                     nextTurn();
@@ -362,7 +378,7 @@ const socketController = (socket, io) => {
     // 리뷰창에서 페이지가 넘어갈 때
     socket.on(events.updatePageNum, handleUpdatePageNumS);
     // 게임 종료 이벤트 처리
-    socket.on(events.terminateGame, handleTerminateGameS);
+    socket.on(events.terminateGame, handleTerminateGameS)
 };
 
 export default socketController;

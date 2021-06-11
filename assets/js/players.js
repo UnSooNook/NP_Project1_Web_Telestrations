@@ -33,16 +33,18 @@ export const handleUpdatePlayer = ({ sockets }) => {
         playerDiv.appendChild(nameDiv);
         playersDiv.appendChild(playerDiv);
     });
-    // 자신에 준비상태에 맞게 준비 버튼 글자 변경
-    if (!newMe.leader) {
-        if (newMe.ready) {
-            readyBtn.innerHTML = "준비 취소";
+    if (newMe) {
+        // 자신에 준비상태에 맞게 준비 버튼 글자 변경
+        if (!newMe.leader) {
+            if (newMe.ready) {
+                readyBtn.innerHTML = "준비 취소";
+            } else {
+                readyBtn.innerHTML = "준비";
+            }
         } else {
-            readyBtn.innerHTML = "준비";
+            // 방장인 경우 준비 버튼을 게임 시작 버튼 으로
+            readyBtn.innerHTML = "게임 시작";
         }
-    } else {
-        // 방장인 경우 준비 버튼을 게임 시작 버튼 으로
-        readyBtn.innerHTML = "게임 시작";
     }
     updateMySocket(newMe);
 };

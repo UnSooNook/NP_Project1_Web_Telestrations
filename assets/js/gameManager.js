@@ -58,9 +58,8 @@ const updateTimerDiv = (time) => {
 const handleTimer = () => {
     timeRemaining--;
     updateTimerDiv(timeRemaining);
-    console.log("timer:", timeRemaining);
     if (timeRemaining === 0) {
-        console.log("Time Expired");
+        console.log("Timer End");
         gameSubmit();
         clearInterval(timer);
     }
