@@ -292,9 +292,9 @@ const socketController = (socket, io) => {
         }
     };
     // 플레이어가 제출했을 때 처리 함수
-    const handleGameSubmitS = ({ data }) => {
+    const handleGameSubmitS = ({ data, ready }) => {
         if (inPlaying) {
-            socket.ready = true;
+            socket.ready = ready;
             // 중복 제출인지 확인
             const myIndex = whereAmI(socket.id);
             if (myIndex > -1) {
@@ -304,15 +304,20 @@ const socketController = (socket, io) => {
                     targetIndex = (myIndex + gameTurn) % sockets.length;
                 // 플레이어가 짝수일 때
                 else
-                    targetIndex =
-                        (myIndex + gameTurn + sockets.length - 1) % sockets.length;
-                if (sockets[myIndex].ready) {
-                    sketchBook[targetIndex].history[gameTurn] = data;
-                } else {
-                    sketchBook[targetIndex].history.push(data);
-                    sockets[myIndex].ready = true;
-                    updatePlayer();
+                    targetIndex = (myIndex + gameTurn + sockets.length - 1) % sockets.length;
+                // 스케치북에 저장
+                // 다시 제출
+                if (sketchBook[targetIndex].history.length > gameTurn ) {
+                    if (ready) {
+                        sketchBook[targetIndex].history[gameTurn] = data;
+                    }
                 }
+                // 첫 제출
+                else {
+                    sketchBook[targetIndex].history.push(data);
+                }
+                sockets[myIndex].ready = ready;
+                updatePlayer();
                 console.log(`handleGameSubmitS: ${socket.nickname} 제출`);
                 if (readyCount === sockets.length) {
                     console.log("gameSubmit: 모두 제출 완료!");

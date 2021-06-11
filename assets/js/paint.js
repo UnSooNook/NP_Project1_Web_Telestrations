@@ -85,7 +85,6 @@ export const clearCanvas = () => {
 const handleColorClick = ({ target }) => {
     // 초기화 버튼인 경우
     if (target.innerHTML === "초기화") {
-        getCanvasData();
         clearCanvas();
     } else {
         const color = target.style.backgroundColor;

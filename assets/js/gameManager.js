@@ -46,7 +46,7 @@ let currMode = -1;
 // 제출 여부
 let submit = false;
 // 한 턴 당 제한 시간(초)
-const TIMELIMIT = 60;
+const TIMELIMIT = 10;
 
 // 화면에 표시되는 타이머 숫자 변경 함수
 const updateTimerDiv = (time) => {
@@ -60,7 +60,7 @@ const handleTimer = () => {
     updateTimerDiv(timeRemaining);
     if (timeRemaining === 0) {
         console.log("Timer End");
-        gameSubmit();
+        handleGameSubmit[currMode].call(this);
         clearInterval(timer);
     }
 };
@@ -87,12 +87,14 @@ const handleGameSubmitModify = [
         submitBtn.classList.remove("hidden");
         modifyBtn.classList.add("hidden");
         submitWord.classList.add("hidden");
+        gameSubmit(null);
     },
     // mod 1
     () => {
         enableCanvas();
         submitBtn.classList.remove("hidden");
         modifyBtn.classList.add("hidden");
+        gameSubmit(null);
     },
     // mod 2
     () => {
@@ -102,6 +104,7 @@ const handleGameSubmitModify = [
         submitBtn.classList.remove("hidden");
         modifyBtn.classList.add("hidden");
         submitWord.classList.add("hidden");
+        gameSubmit(null);
     },
 ];
 
@@ -110,7 +113,7 @@ const handleGameSubmitModify = [
 const handleGameSubmit = [
     // mod 0
     (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         const submitWord = modContainer[0].querySelector(".submitWord");
         const form = modContainer[0].querySelector("form");
         const input = form.querySelector("input");
@@ -126,8 +129,7 @@ const handleGameSubmit = [
     },
     // mod 1
     (e) => {
-        e.preventDefault();
-        // TODO: get canvas data
+        if (e) e.preventDefault();
         const drawingSVG = getCanvasData();
         disableCanvas();
         submitBtn.classList.add("hidden");
@@ -136,7 +138,7 @@ const handleGameSubmit = [
     },
     // mod 2
     (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         const submitWord = modContainer[2].querySelector(".submitWord");
         const form = modContainer[2].querySelector("form");
         const input = form.querySelector("input");
@@ -218,6 +220,7 @@ const activeMod = [
         canvasShowDiv.innerHTML = drawingSVG;
         const form = modContainer[2].querySelector("form");
         form.addEventListener("submit", handleGameSubmit[2]);
+        form.querySelector("input").value = "";
         submitBtn.addEventListener("click", handleGameSubmit[2]);
         modifyBtn.addEventListener("click", handleGameSubmitModify[2]);
     },
@@ -304,6 +307,7 @@ export const handleGameStart = ({ word, maxTurn }) => {
     gameTimerDiv.classList.remove("hidden");
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
+    submit = false;
     // 채팅 비활성화
     clearChat();
     enableChat(false);
@@ -352,32 +356,24 @@ export const handleNextTurn = ({ currTurn }) => {
 
 // 게임 내용 제출
 const gameSubmit = (data) => {
-    // 현재 게임 모드에 따라 제출
-    // 제시어
-    if (currMode === 0) {
-        console.log("gameManager - handleGameSubmit 제시어 제출");
-        // data = `${getMySocket().nickname}: 제시어`;
+    // 수정
+    if (data === null) {
+        console.log("수정");
+        submit = false;
+        getMySocket().emit(window.events.gameSubmit, { data: data, ready: submit });
     }
-    // 그리기
-    else if (currMode === 1) {
-        console.log("gameManager - handleGameSubmit 그리기 제출");
-        // TODO: 그림 가져오기
-        //data = `${getMySocket().nickname}'s 그림`;
-    }
-    // 그림 맞추기
+    // 제출
     else {
-        console.log("gameManager - handleGameSubmit 맞추기 제출");
-        // TODO: 정답 가져오기
-        // data = `${getMySocket().nickname}'s 정답`;
+        console.log("제출");
+        submit = true;
+        getMySocket().emit(window.events.gameSubmit, { data: data, ready: submit });
     }
-    getMySocket().emit(window.events.gameSubmit, { data: data });
-    submit = true;
 };
 
 // 그릴 단어를 받았을 때
 export const handleDrawThis = ({ word }) => {
     console.log("gameManager - handleDrawThis:", word);
-    // submit = false;
+    submit = false;
     selectMod(currMode, word);
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
@@ -385,8 +381,8 @@ export const handleDrawThis = ({ word }) => {
 
 // 맞출 단어를 받았을 때
 export const handleGuessThis = ({ drawing }) => {
-    console.log("gameManager - handleGuessThis:", drawing);
-    // submit = false;
+    console.log("gameManager - handleGuessThis");
+    submit = false;
     selectMod(currMode, drawing);
     timeRemaining = TIMELIMIT;
     timer = setInterval(handleTimer, 1000);
@@ -414,7 +410,7 @@ const pageUpdate = () => {
                 exitBtn.classList.add("hidden");
             }
         }
-        console.log("gameManager - pageUpdate:", sketchBookOwner, myPage, data);
+        console.log("gameManager - pageUpdate:", sketchBookOwner, myPage);
     }
 };
 
