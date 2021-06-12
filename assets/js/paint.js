@@ -1,5 +1,4 @@
 import "./canvas2svg";
-import { shootChat } from "./chat";
 
 const canvas = document.querySelector(".canvas__draw");
 const ctx = canvas.getContext("2d");
@@ -36,13 +35,11 @@ let filling = false;
 const stopPainting = (event) => {
     event.preventDefault();
     painting = false;
-    shootChat({message: "그리기 끝", messageColor: "green" });
 };
 
 const startPainting = (event) => {
     event.preventDefault();
     painting = true;
-    shootChat({message: "터치 시작", messageColor: "red" });
 };
 
 const startPaintingTouch = (event) => {
@@ -54,7 +51,6 @@ const startPaintingTouch = (event) => {
     ctx.beginPath();
     ctxSVG.moveTo(x, y);
     ctxSVG.beginPath();
-    shootChat({message: "터치 시작", messageColor: "red" });
 };
 
 const beginPath = (x, y) => {
@@ -85,7 +81,6 @@ const onMouseMove = (event) => {
     // 그리기 시작
     if (!painting) {
         beginPath(x, y);
-        shootChat({message: "그리기 시작", messageColor: "orange" });
         // 그리는 중
     } else if (!filling) {
         strokePath(x, y);
@@ -98,7 +93,6 @@ const onTouchMove = (event) => {
     const y = event.touches[0].pageY - (window.pageYOffset + canvas.getBoundingClientRect().top);
     // 그리기 시작
     if (!painting) {
-        shootChat({message: "그리기 시작", messageColor: "orange" });
         beginPath(x, y);
         // 그리는 중
     } else if (!filling) {
