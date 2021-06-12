@@ -71,11 +71,9 @@ const onMouseMove = (event) => {
     const y = event.offsetY;
     // 그리기 시작
     if (!painting) {
-        shootChat({message: "그리기 시작", messageColor: "red" });
         beginPath(x, y);
         // 그리는 중
     } else if (!filling) {
-        shootChat({message: "그리는 중", messageColor: "orange" });
         strokePath(x, y);
     }
 };
@@ -86,9 +84,11 @@ const onTouchMove = (event) => {
     const y = event.touches[0].pageY - (window.pageYOffset + canvas.getBoundingClientRect().top);
     // 그리기 시작
     if (!painting) {
+        shootChat({message: "그리기 시작", messageColor: "red" });
         beginPath(x, y);
         // 그리는 중
     } else if (!filling) {
+        shootChat({message: "그리는 중", messageColor: "orange" });
         strokePath(x, y);
     }
 };
