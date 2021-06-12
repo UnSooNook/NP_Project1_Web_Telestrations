@@ -44,8 +44,12 @@ const startPainting = (event) => {
 
 const startPaintingTouch = (event) => {
     event.preventDefault();
-    const x = event.touches[0].pageX - (window.pageXOffset + canvas.getBoundingClientRect().left);
-    const y = event.touches[0].pageY - (window.pageYOffset + canvas.getBoundingClientRect().top);
+    const x =
+        event.touches[0].pageX -
+        (window.pageXOffset + canvas.getBoundingClientRect().left);
+    const y =
+        event.touches[0].pageY -
+        (window.pageYOffset + canvas.getBoundingClientRect().top);
     painting = true;
     ctx.moveTo(x, y);
     ctx.beginPath();
@@ -89,8 +93,12 @@ const onMouseMove = (event) => {
 
 const onTouchMove = (event) => {
     event.preventDefault();
-    const x = event.touches[0].pageX - (window.pageXOffset + canvas.getBoundingClientRect().left);
-    const y = event.touches[0].pageY - (window.pageYOffset + canvas.getBoundingClientRect().top);
+    const x =
+        event.touches[0].pageX -
+        (window.pageXOffset + canvas.getBoundingClientRect().left);
+    const y =
+        event.touches[0].pageY -
+        (window.pageYOffset + canvas.getBoundingClientRect().top);
     // 그리기 시작
     if (!painting) {
         beginPath(x, y);
