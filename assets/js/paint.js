@@ -32,11 +32,13 @@ ctxSVG.lineWidth = 2.5;
 let painting = false;
 let filling = false;
 
-const stopPainting = () => {
+const stopPainting = (event) => {
+    event.preventDefault();
     painting = false;
 };
 
-const startPainting = () => {
+const startPainting = (event) => {
+    event.preventDefault();
     painting = true;
 };
 
