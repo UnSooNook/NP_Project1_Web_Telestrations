@@ -45,6 +45,18 @@ const startPainting = (event) => {
     shootChat({message: "터치 시작", messageColor: "red" });
 };
 
+const startPaintingTouch = (event) => {
+    event.preventDefault();
+    const x = event.touches[0].pageX - (window.pageXOffset + canvas.getBoundingClientRect().left);
+    const y = event.touches[0].pageY - (window.pageYOffset + canvas.getBoundingClientRect().top);
+    painting = true;
+    ctx.moveTo(x, y);
+    ctx.beginPath();
+    ctxSVG.moveTo(x, y);
+    ctxSVG.beginPath();
+    shootChat({message: "터치 시작", messageColor: "red" });
+};
+
 const beginPath = (x, y) => {
     ctx.moveTo(x, y);
     ctx.beginPath();
@@ -139,7 +151,7 @@ export const disableCanvas = () => {
     canvas.removeEventListener("mouseleave", stopPainting);
 
     canvas.removeEventListener("touchmove", onTouchMove);
-    canvas.removeEventListener("touchstart", startPainting);
+    canvas.removeEventListener("touchstart", startPaintingTouch);
     canvas.removeEventListener("touchend", stopPainting);
     canvas.removeEventListener("touchleave", stopPainting);
 };
@@ -152,7 +164,7 @@ export const enableCanvas = () => {
     canvas.addEventListener("mouseleave", stopPainting);
 
     canvas.addEventListener("touchmove", onTouchMove, false);
-    canvas.addEventListener("touchstart", startPainting, false);
+    canvas.addEventListener("touchstart", startPaintingTouch, false);
     canvas.addEventListener("touchend", stopPainting, false);
     canvas.addEventListener("touchleave", stopPainting, false);
 };
