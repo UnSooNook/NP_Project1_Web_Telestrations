@@ -144,10 +144,10 @@ export const enableCanvas = () => {
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
 
-    canvas.addEventListener("touchmove", onTouchMove);
-    canvas.addEventListener("touchstart", startPainting);
-    canvas.addEventListener("touchend", stopPainting);
-    canvas.addEventListener("touchleave", stopPainting);
+    canvas.addEventListener("touchmove", onTouchMove, false);
+    canvas.addEventListener("touchstart", startPainting, false);
+    canvas.addEventListener("touchend", stopPainting, false);
+    canvas.addEventListener("touchleave", stopPainting, false);
 };
 
 // Canvas 데이터를 svg로 저장
