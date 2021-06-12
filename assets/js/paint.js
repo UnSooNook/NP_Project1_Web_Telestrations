@@ -42,6 +42,7 @@ const stopPainting = (event) => {
 const startPainting = (event) => {
     event.preventDefault();
     painting = true;
+    shootChat({message: "그리기 시작1", messageColor: "red" });
 };
 
 const beginPath = (x, y) => {
