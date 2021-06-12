@@ -76,7 +76,7 @@ const onMouseMove = (event) => {
     }
 };
 
-const onMTouchMove = (event) => {
+const onTouchMove = (event) => {
     const x = event.touches[0].pageX - (window.pageXOffset + canvas.getBoundingClientRect().left);
     const y = event.touches[0].pageY - (window.pageYOffset + canvas.getBoundingClientRect().top);
     // 그리기 시작
