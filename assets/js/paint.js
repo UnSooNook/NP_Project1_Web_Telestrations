@@ -65,6 +65,20 @@ const strokePath = (x, y, color = null) => {
 const onMouseMove = (event) => {
     const x = event.offsetX;
     const y = event.offsetY;
+    console.log(window.pageXOffset + canvas.getBoundingClientRect().left, window.pageYOffset + canvas.getBoundingClientRect().top);
+    console.log(x, y);
+    // 그리기 시작
+    if (!painting) {
+        beginPath(x, y);
+        // 그리는 중
+    } else if (!filling) {
+        strokePath(x, y);
+    }
+};
+
+const onMTouchMove = (event) => {
+    const x = event.touches[0].pageX - (window.pageXOffset + canvas.getBoundingClientRect().left);
+    const y = event.touches[0].pageY - (window.pageYOffset + canvas.getBoundingClientRect().top);
     // 그리기 시작
     if (!painting) {
         beginPath(x, y);
@@ -125,6 +139,11 @@ export const enableCanvas = () => {
     canvas.addEventListener("mousedown", startPainting);
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
+
+    canvas.addEventListener("touchmove", onTouchMove);
+    canvas.addEventListener("touchstart", startPainting);
+    canvas.addEventListener("touchend", stopPainting);
+    canvas.addEventListener("touchleave", stopPainting);
 };
 
 // Canvas 데이터를 svg로 저장
