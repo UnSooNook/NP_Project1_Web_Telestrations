@@ -36,20 +36,20 @@ let filling = false;
 const stopPainting = (event) => {
     event.preventDefault();
     painting = false;
-    shootChat({message: "그리기 끝", messageColor: "yellow" });
+    shootChat({message: "그리기 끝", messageColor: "green" });
 };
 
 const startPainting = (event) => {
     event.preventDefault();
     painting = true;
-    shootChat({message: "그리기 시작1", messageColor: "red" });
+    shootChat({message: "터치 시작", messageColor: "red" });
 };
 
 const beginPath = (x, y) => {
-    ctx.beginPath();
     ctx.moveTo(x, y);
-    ctxSVG.beginPath();
+    ctx.beginPath();
     ctxSVG.moveTo(x, y);
+    ctxSVG.beginPath();
 };
 
 // 선 그리기 (색상 포함)
@@ -73,6 +73,7 @@ const onMouseMove = (event) => {
     // 그리기 시작
     if (!painting) {
         beginPath(x, y);
+        shootChat({message: "그리기 시작", messageColor: "orange" });
         // 그리는 중
     } else if (!filling) {
         strokePath(x, y);
@@ -85,11 +86,10 @@ const onTouchMove = (event) => {
     const y = event.touches[0].pageY - (window.pageYOffset + canvas.getBoundingClientRect().top);
     // 그리기 시작
     if (!painting) {
-        shootChat({message: "그리기 시작", messageColor: "red" });
+        shootChat({message: "그리기 시작", messageColor: "orange" });
         beginPath(x, y);
         // 그리는 중
     } else if (!filling) {
-        shootChat({message: "그리는 중", messageColor: "orange" });
         strokePath(x, y);
     }
 };
