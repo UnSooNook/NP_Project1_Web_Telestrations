@@ -1,4 +1,5 @@
 import "./canvas2svg";
+import { shootChat } from "./chat";
 
 const canvas = document.querySelector(".canvas__draw");
 const ctx = canvas.getContext("2d");
@@ -35,6 +36,7 @@ let filling = false;
 const stopPainting = (event) => {
     event.preventDefault();
     painting = false;
+    shootChat({message: "그리기 끝", messageColor: "yellow" });
 };
 
 const startPainting = (event) => {
@@ -69,9 +71,11 @@ const onMouseMove = (event) => {
     const y = event.offsetY;
     // 그리기 시작
     if (!painting) {
+        shootChat({message: "그리기 시작", messageColor: "red" });
         beginPath(x, y);
         // 그리는 중
     } else if (!filling) {
+        shootChat({message: "그리는 중", messageColor: "orange" });
         strokePath(x, y);
     }
 };
