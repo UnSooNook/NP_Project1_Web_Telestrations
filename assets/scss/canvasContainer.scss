@@ -95,7 +95,7 @@
         //height: 100%;
         //width: 100%;
         height: 500px;
-        width: 1000px;
+        width: 500px;
         border: 1px rgb(129, 129, 129) solid;
         border-radius: 2rem;
         //box-shadow: inset 0 5px 5px gray;
@@ -104,20 +104,26 @@
         padding-left: 15%;
         padding-right: 15%;
         margin-top: 1rem;
-        display: flex;
+        // display: flex;
+        display: block;
+        white-space: nowrap;
         justify-content: space-evenly;
+        justify-content: center;
         align-items: center;
         button {
-          height: 3.5rem;
-          width: 3.5rem;
+          // height: 3.5rem;
+          // width: 3.5rem;
+          height: 40px;
+          width: 40px;
           border: none;
-          border-radius: 5rem;
+          // border-radius: 5rem;
+          border-radius: 20px;
           transition: all ease-in-out 0.1s;
           &:hover {
-            transform: scale(1.2);
+            transform: scale(1.25);
           }
           &:focus {
-            transform: scale(0.8);
+            transform: scale(1.2);
           }
         }
         .btn__clear {
@@ -127,7 +133,7 @@
           border: 1px gray solid;
         }
         .clicked {
-          transform: scale(0.8);
+          transform: scale(1);
         }
       }
     }
@@ -142,9 +148,10 @@
       height: 75%;
       .canvas__show {
         height: 500px;
-        width: 1000px;
+        width: 500px;
         border: 1px rgb(129, 129, 129) solid;
         border-radius: 2rem;
+        overflow: hidden;
       }
     }
     input {

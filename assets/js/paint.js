@@ -7,7 +7,7 @@ const colorBtns = controls.querySelectorAll("button");
 
 const INITIAL_COLOR = "rgb(0, 0, 0)";
 
-const CANVAS_WIDTH = 1000;
+const CANVAS_WIDTH = 500;
 const CANVAS_HEIGHT = 500;
 
 // 나중에 SVG로 변환할 ctx
@@ -23,10 +23,10 @@ ctxSVG.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 // 검정 활성화
 colorBtns[1].classList.add("clicked");
 ctx.strokeStyle = INITIAL_COLOR;
-ctx.fillStyle = INITIAL_COLOR;
+ctx.fillStyle = "rgb(255, 255, 255)";
 ctx.lineWidth = 2.5;
 ctxSVG.strokeStyle = INITIAL_COLOR;
-ctxSVG.fillStyle = INITIAL_COLOR;
+ctxSVG.fillStyle = "rgb(255, 255, 255)";
 ctxSVG.lineWidth = 2.5;
 
 let painting = false;
@@ -101,16 +101,18 @@ const onTouchMove = (event) => {
 };
 
 export const clearCanvas = () => {
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.beginPath();
-    ctxSVG.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // ctxSVG.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctxSVG.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctxSVG.beginPath();
 };
 
 // 색상 변경 이벤트 처리
 const handleColorClick = ({ target }) => {
-    // 초기화 버튼인 경우
-    if (target.innerHTML === "초기화") {
+    // 채우기 버튼인 경우
+    if (target.innerHTML === "채우기") {
         clearCanvas();
     } else {
         const color = target.style.backgroundColor;
@@ -149,7 +151,7 @@ export const disableCanvas = () => {
     canvas.removeEventListener("touchend", stopPainting);
     canvas.removeEventListener("touchleave", stopPainting);
 };
-
+let first = 0;
 // 그리기 적용
 export const enableCanvas = () => {
     canvas.addEventListener("mousemove", onMouseMove);
