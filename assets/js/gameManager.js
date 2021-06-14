@@ -174,8 +174,8 @@ const deactiveMod = [
     // mod 1
     () => {
         modContainer[1].querySelector(".word").innerHTML = "";
-        clearCanvas();
         disableCanvas();
+        clearCanvas();
         submitBtn.classList.remove("hidden");
         submitBtn.removeEventListener("click", handleGameSubmit[1]);
         modifyBtn.classList.add("hidden");
@@ -205,6 +205,9 @@ const activeMod = [
         const form = modContainer[0].querySelector("form");
         form.addEventListener("submit", handleGameSubmit[0]);
         form.querySelector("input").value = word;
+        if (!word.startsWith("자유 주제")) {
+            form.querySelector("input").readOnly = true;
+        }
         submitBtn.addEventListener("click", handleGameSubmit[0]);
         modifyBtn.addEventListener("click", handleGameSubmitModify[0]);
     },
@@ -221,6 +224,7 @@ const activeMod = [
         const form = modContainer[2].querySelector("form");
         form.addEventListener("submit", handleGameSubmit[2]);
         form.querySelector("input").value = "";
+        form.querySelector("input").readOnly = false;
         submitBtn.addEventListener("click", handleGameSubmit[2]);
         modifyBtn.addEventListener("click", handleGameSubmitModify[2]);
     },
@@ -256,7 +260,7 @@ const enableReviewView = () => {
 };
 
 // 리뷰 화면 컨텐츠 띄우기
-const activeReview = (sketchBookOwner, myPage, data) => {
+const activeReview = (sketchBookOwner, sketchBookOwnerColor, myPage, data) => {
     // 초기화
     reviewContainer.innerHTML = "";
 
@@ -266,6 +270,7 @@ const activeReview = (sketchBookOwner, myPage, data) => {
     const span1 = document.createElement("span");
     span1.className = "review__nickname";
     span1.innerHTML = sketchBookOwner;
+    span1.style.color = sketchBookOwnerColor;
     const span2 = document.createElement("span");
     span2.innerHTML = "의 스케치북 - page";
     const span3 = document.createElement("span");
@@ -397,9 +402,10 @@ const pageUpdate = () => {
         else currMode = 2;
         const player = Math.floor(currPage / sketchBookPage);
         const sketchBookOwner = sketchBook[player].nickname;
+        const sketchBookOwnerColor = sketchBook[player].color;
         const data = sketchBook[player].history[myPage];
         // 리뷰화면 다시 그리기
-        activeReview(sketchBookOwner, myPage, data);
+        activeReview(sketchBookOwner, sketchBookOwnerColor, myPage, data);
         // 리더이고, 마지막 페이지인 경우 종료 버튼 활성화
         if (getMySocket().leader) {
             if (currPage === finalPage - 1) {

@@ -109,10 +109,10 @@ const onTouchMove = (event) => {
 };
 
 export const clearCanvas = () => {
-    // ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.beginPath();
-    // ctxSVG.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctxSVG.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctxSVG.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctxSVG.beginPath();
 };
@@ -158,6 +158,10 @@ export const disableCanvas = () => {
     canvas.removeEventListener("touchstart", startPaintingTouch);
     canvas.removeEventListener("touchend", stopPainting);
     canvas.removeEventListener("touchleave", stopPainting);
+    ctx.fillStyle = "white";
+    ctxSVG.fillStyle = "white";
+    ctx.strokeStyle = "black";
+    ctxSVG.strokeStyle = "black";
 };
 let first = 0;
 // 그리기 적용

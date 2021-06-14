@@ -2176,6 +2176,7 @@ export const chooseWords = (num) => {
     let isOverlap = 1;
     let chosenWord = [];
     const iter = range(0, num);
+    const freeIndex = Math.floor(Math.random() * num);
     // 단어 뽑기
     iter.forEach((index) => {
         // 중복 제거
@@ -2183,6 +2184,10 @@ export const chooseWords = (num) => {
         while (isOverlap > 0) {
             word = words[Math.floor(Math.random() * words.length)];
             isOverlap = chosenWord.indexOf(word);
+        }
+        // 플레이 인원이 4명이 넘으면 1명은 완전 자유 주제
+        if ((num >= 4) && (freeIndex === index)) {
+            word = `자유 주제(or ${word})`;
         }
         chosenWord.push(word);
     });

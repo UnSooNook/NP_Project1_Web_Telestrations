@@ -73,7 +73,9 @@
       font-size: 1.5rem;
     }
     .word {
-      font-size: 2.5rem;
+      font-size: 30px;
+      text-align: center;
+      overflow: visible;
     }
     input {
       text-align: center;
@@ -217,10 +219,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 6rem;
+      font-size: 60px;
       border: 1px rgb(129, 129, 129) solid;
       border-radius: 2rem;
-      overflow: hidden;
+      overflow: visible;
+      text-align: center;
+      background-color: white;
     }
   }
   .canvas__btns {
@@ -233,9 +237,13 @@
       background-color: orange;
       border-color: orange;
       border: none;
-      height: 100%;
-      width: 20rem;
-      border-radius: 30px;
+      // height: 100%;
+      // width: 20rem;
+      margin-top: 30px;
+      margin-bottom: 5px;
+      height: 40px;
+      width: 320px;
+      border-radius: 20px;
       box-shadow: 0 5px 5px gray;
       font-family: "Jua";
       font-size: large;

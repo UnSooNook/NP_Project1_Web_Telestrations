@@ -81,6 +81,7 @@ const socketController = (socket, io) => {
             sketchBook.push({
                 id: sockets[i].id,
                 nickname: sockets[i].nickname,
+                color: sockets[i].color,
                 word: words[i],
                 history: [],
             });
@@ -301,10 +302,10 @@ const socketController = (socket, io) => {
                 let targetIndex = null;
                 // 플레이어가 홀수일 때
                 if (gameTurn === 0 || finalTurn !== sockets.length)
-                    targetIndex = (myIndex + gameTurn) % sockets.length;
+                    targetIndex = (myIndex - gameTurn + sockets.length) % sockets.length;
                 // 플레이어가 짝수일 때
                 else
-                    targetIndex = (myIndex + gameTurn + sockets.length - 1) % sockets.length;
+                    targetIndex = (myIndex - gameTurn + sockets.length * 2 + 1) % sockets.length;
                 // 스케치북에 저장
                 // 다시 제출
                 if (sketchBook[targetIndex].history.length > gameTurn ) {
@@ -333,11 +334,11 @@ const socketController = (socket, io) => {
             let targetIndex = null;
             // 플레이어가 홀수일 때
             if (gameTurn === 0 || finalTurn !== sockets.length)
-                targetIndex = (myIndex + gameTurn) % sockets.length;
+                targetIndex = (myIndex - gameTurn + sockets.length) % sockets.length;
             // 플레이어가 짝수일 때
             else
                 targetIndex =
-                    (myIndex + gameTurn + sockets.length - 1) % sockets.length;
+                    (myIndex - gameTurn + sockets.length * 2 + 1) % sockets.length;
             const data = sketchBook[targetIndex].history[gameTurn - 1];
             sendTo(socket.id, events.drawThis, { word: data });
             console.log("letMeDraw - 그릴 단어:", data);
@@ -350,11 +351,11 @@ const socketController = (socket, io) => {
             let targetIndex = null;
             // 플레이어가 홀수일 때
             if (gameTurn === 0 || finalTurn !== sockets.length)
-                targetIndex = (myIndex + gameTurn) % sockets.length;
+                targetIndex = (myIndex - gameTurn + sockets.length) % sockets.length;
             // 플레이어가 짝수일 때
             else
                 targetIndex =
-                    (myIndex + gameTurn + sockets.length - 1) % sockets.length;
+                    (myIndex - gameTurn + sockets.length * 2 + 1) % sockets.length;
             const data = sketchBook[targetIndex].history[gameTurn - 1];
             sendTo(socket.id, events.guessThis, { drawing: data });
             console.log("letMeGuess - 맞출 그림:", data);
