@@ -284,6 +284,12 @@ const activeReview = (sketchBookOwner, sketchBookOwnerColor, myPage, data) => {
     const dataDiv = document.createElement("div");
     dataDiv.className = "review__data";
     dataDiv.innerHTML = data;
+    // 그림일 경우 overflow hidden, 글씨일 경우 scroll
+    if ((myPage % 2 === 1)) {
+        dataDiv.style.overflow = "hidden";
+    } else {
+        dataDiv.style.overflow = "scroll";
+    }
     reviewContainer.appendChild(dataDiv);
 };
 
