@@ -1,2 +1,1 @@
-# nomadcoders-study_guess-mine_test
-Realtime Drawing Game built with SocketIO, Gulp and Node
+숭실대학교 소프트웨어학부 2021-1학기 '네트워크프로그래밍' 프로젝트1 - 웹서버 기반 텔레스트레이션 게임 서비스 (Socket.IO 사용)
