@@ -49,8 +49,8 @@
     background-color: white;
   }
   .help__container {
-    padding-left: 10rem;
-    padding-right: 10rem;
+    padding-left: 10px;
+    padding-right: 10px;
     div {
       text-align: center;
       margin-bottom: 5rem;
@@ -59,6 +59,7 @@
       }
     }
     p {
+      text-align: center;
       font-size: 1.5rem;
       margin-bottom: 2rem;
     }
@@ -152,12 +153,15 @@
   .mod2__container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     .canvas__div {
       margin-top: 2rem;
       width: 100%;
       height: 75%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      //   justify-content: center;
       .canvas__show {
         height: 500px;
         width: 500px;
@@ -191,11 +195,15 @@
     }
   }
   .review__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     .review__spans {
       width: 100%;
       display: flex;
       justify-content: center;
       align-items: flex-end;
+      padding-bottom: 10px;
       .review__nickname {
         font-size: 2rem;
       }
@@ -204,11 +212,15 @@
       }
     }
     .review__data {
-      height: 100%;
+      width: 500px;
+      height: 500px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 6rem;
+      border: 1px rgb(129, 129, 129) solid;
+      border-radius: 2rem;
+      overflow: hidden;
     }
   }
   .canvas__btns {
