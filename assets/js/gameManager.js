@@ -221,6 +221,8 @@ const activeMod = [
         form.querySelector("input").value = word;
         if (!word.startsWith("자유 주제")) {
             form.querySelector("input").readOnly = true;
+        } else {
+            form.querySelector("input").readOnly = false;
         }
         submitBtn.addEventListener("click", handleGameSubmit[0]);
         modifyBtn.addEventListener("click", handleGameSubmitModify[0]);
