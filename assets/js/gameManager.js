@@ -305,7 +305,7 @@ const activeReview = (sketchBookOwner, sketchBookOwnerColor, myPage, data) => {
     if ((myPage % 2 === 1)) {
         dataDiv.style.overflow = "hidden";
     } else {
-        dataDiv.style.overflow = "scroll";
+        dataDiv.style.overflow = "auto";
     }
     reviewContainer.appendChild(dataDiv);
 };
