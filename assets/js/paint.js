@@ -121,7 +121,7 @@ export const clearCanvas = () => {
 // 색상 변경 이벤트 처리
 const handleColorClick = ({ target }) => {
     // 채우기 버튼인 경우
-    if (target.innerHTML === "채우기") {
+    if (target.innerHTML === "Fill") {
         clearCanvas();
     } else {
         const color = target.style.backgroundColor;
