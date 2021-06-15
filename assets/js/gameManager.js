@@ -67,6 +67,11 @@ const handleTimer = () => {
     }
 };
 
+// 게임 중 여부 리턴
+export const isPlaying = () => {
+    return inPlaying;
+}
+
 // currMode에 맞는 화면 띄우기
 const enableModView = (number) => {
     readyBtn.classList.add("hidden");
@@ -269,7 +274,6 @@ const enableReviewView = () => {
     clearChat();
     enableChat(true);
 };
-const first = true;
 // 리뷰 화면 컨텐츠 띄우기
 const activeReview = (sketchBookOwner, sketchBookOwnerColor, myPage, data) => {
     // 초기화

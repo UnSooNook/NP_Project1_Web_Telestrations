@@ -1,3 +1,4 @@
+import { isPlaying } from "./gameManager";
 import { getMySocket, updateMySocket } from "./mySocket";
 
 const readyBtn = document.querySelector(".canvas__btn__ready");
@@ -17,7 +18,7 @@ export const handleUpdatePlayer = ({ sockets }) => {
         playerDiv.className = "players";
         const isLeader = document.createElement("i");
         isLeader.classList.add("fas");
-        if (socket.leader) {
+        if ((isPlaying() === false) && (socket.leader)) {
             isLeader.classList.add("fa-crown");
             isLeader.style.color = "orange";
         } else if (socket.ready) {
