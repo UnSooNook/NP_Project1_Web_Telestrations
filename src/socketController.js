@@ -358,7 +358,7 @@ const socketController = (socket, io) => {
                     (myIndex - gameTurn + sockets.length * 2 + 1) % sockets.length;
             const data = sketchBook[targetIndex].history[gameTurn - 1];
             sendTo(socket.id, events.guessThis, { drawing: data });
-            console.log("letMeGuess - 맞출 그림:", data);
+            console.log("letMeGuess - 맞출 스케치북:", sketchBook[targetIndex].nickname);
         }
     };
     // 리뷰창에서 페이지가 넘어갈 때 처리함수

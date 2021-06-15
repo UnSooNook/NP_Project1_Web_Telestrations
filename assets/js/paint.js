@@ -4,6 +4,7 @@ const canvas = document.querySelector(".canvas__draw");
 const ctx = canvas.getContext("2d");
 const controls = document.querySelector(".canvas__controls");
 const colorBtns = controls.querySelectorAll("button");
+const penControl = document.querySelector(".range__width");
 
 const INITIAL_COLOR = "rgb(0, 0, 0)";
 
@@ -133,6 +134,13 @@ const handleColorClick = ({ target }) => {
     }
 };
 
+const handlePenWidth = (event) => {
+    event.preventDefault();
+    const penWidth = penControl.value;
+    ctx.lineWidth = penWidth;
+    ctxSVG.lineWidth = penWidth;
+}
+
 const handleCM = (event) => {
     event.preventDefault();
 };
@@ -158,10 +166,14 @@ export const disableCanvas = () => {
     canvas.removeEventListener("touchstart", startPaintingTouch);
     canvas.removeEventListener("touchend", stopPainting);
     canvas.removeEventListener("touchleave", stopPainting);
+    penControl.removeEventListener("input", handlePenWidth);
     ctx.fillStyle = "white";
     ctxSVG.fillStyle = "white";
     ctx.strokeStyle = "black";
     ctxSVG.strokeStyle = "black";
+    ctx.lineWidth = 2;
+    ctxSVG.lineWidth = 2;
+    penControl.value = 2;
 };
 let first = 0;
 // 그리기 적용
@@ -175,6 +187,10 @@ export const enableCanvas = () => {
     canvas.addEventListener("touchstart", startPaintingTouch, false);
     canvas.addEventListener("touchend", stopPainting, false);
     canvas.addEventListener("touchleave", stopPainting, false);
+    
+    penControl.addEventListener("input", handlePenWidth);
+    ctx.lineWidth = 2;
+    ctxSVG.lineWidth = 2;
 };
 
 // Canvas 데이터를 svg로 저장

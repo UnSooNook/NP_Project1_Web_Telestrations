@@ -1,4 +1,5 @@
-import { clearChat, enableChat } from "./chat";
+import html2canvas from "html2canvas";
+import { clearChat, enableChat, shootChat } from "./chat";
 import { getMySocket } from "./mySocket";
 import {
     clearCanvas,
@@ -22,6 +23,7 @@ const nextBtn = document.querySelector(".review__btn__next");
 const exitBtn = document.querySelector(".review__btn__exit");
 const gameTimerDiv = document.querySelector(".canvas__timer");
 const canvasShowDiv = document.querySelector(".canvas__show");
+const downloadBtn = document.querySelector(".review__btn__download");
 
 // 게임 진행 중 여부
 let inPlaying = false;
@@ -150,6 +152,13 @@ const handleGameSubmit = [
             modifyBtn.classList.remove("hidden");
             submitWord.classList.remove("hidden");
             gameSubmit(value);
+        } else {
+            // 시간이 다되었으면 잔소리
+            if (timeRemaining <= 0) {
+                shootChat({ message:"제한 시간이 끝났습니다. 빨리 제출해주세요!", messageColor: "orange" });
+            } else {
+                shootChat({ message:"답을 적은 후 제출해주세요!", messageColor: "orange" });
+            }
         }
     },
 ];
@@ -246,6 +255,8 @@ const enableReviewView = () => {
     modContainer.map((element) => element.classList.add("hidden"));
     gameTimerDiv.classList.add("hidden");
     reviewContainer.classList.remove("hidden");
+    downloadBtn.classList.remove("hidden");
+    downloadBtn.addEventListener("click", handleDownload);
     // 방장인 경우에는 버튼 활성화
     if (getMySocket().leader) {
         prevBtn.classList.remove("hidden");
@@ -258,7 +269,7 @@ const enableReviewView = () => {
     clearChat();
     enableChat(true);
 };
-
+const first = true;
 // 리뷰 화면 컨텐츠 띄우기
 const activeReview = (sketchBookOwner, sketchBookOwnerColor, myPage, data) => {
     // 초기화
@@ -293,6 +304,30 @@ const activeReview = (sketchBookOwner, sketchBookOwnerColor, myPage, data) => {
     reviewContainer.appendChild(dataDiv);
 };
 
+const downloadURI = (uri, name) => {
+    let link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    link.click();
+}
+
+const handleDownload = (e) => {
+    e.preventDefault();
+    const imgDiv = document.querySelector(".review__data");
+    let today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, "0");
+    const date = today.getDate().toString().padStart(2, "0");
+    const hour = today.getHours().toString().padStart(2, "0");
+    const minute = today.getMinutes().toString().padStart(2, "0");
+    const second = today.getSeconds().toString().padStart(2, "0");
+    const imgName = `텔레스트레이션_${year}${month}${date}_${hour}${minute}${second}`;
+    html2canvas(imgDiv).then((canvas) => {
+        let image = canvas.toDataURL();
+        downloadURI(image, imgName);
+    });
+}
+
 // 게임 종료 후 View 초기화
 const clearAllView = () => {
     deactiveMod.map((e) => e.call(this));
@@ -306,6 +341,7 @@ const clearAllView = () => {
     exitBtn.classList.add("hidden");
     readyBtn.classList.remove("hidden");
     gameTimerDiv.classList.add("hidden");
+    downloadBtn.classList.add("hidden");
 };
 
 // 게임 시작 이벤트 처리
