@@ -307,15 +307,15 @@ const socketController = (socket, io) => {
                 else
                     targetIndex = (myIndex - gameTurn + sockets.length * 2 + 1) % sockets.length;
                 // 스케치북에 저장
-                // 다시 제출
                 if (sketchBook[targetIndex].history.length > gameTurn ) {
+                    // 다시 제출
                     if (ready) {
                         sketchBook[targetIndex].history[gameTurn] = data;
+                    } 
+                    // 첫 제출
+                    else {
+                        sketchBook[targetIndex].history.push(data);
                     }
-                }
-                // 첫 제출
-                else {
-                    sketchBook[targetIndex].history.push(data);
                 }
                 sockets[myIndex].ready = ready;
                 updatePlayer();
