@@ -322,10 +322,14 @@ const handleDownload = (e) => {
     const minute = today.getMinutes().toString().padStart(2, "0");
     const second = today.getSeconds().toString().padStart(2, "0");
     const imgName = `텔레스트레이션_${year}${month}${date}_${hour}${minute}${second}`;
+    imgDiv.style.borderRadius = "0rem";
+    imgDiv.style.border = "none"
     html2canvas(imgDiv).then((canvas) => {
         let image = canvas.toDataURL();
         downloadURI(image, imgName);
     });
+    imgDiv.style.borderRadius = "2rem";
+    imgDiv.style.border = "1px #808080 solid"
 }
 
 // 게임 종료 후 View 초기화

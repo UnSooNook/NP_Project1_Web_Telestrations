@@ -51,6 +51,7 @@
   .help__container {
     padding-left: 10px;
     padding-right: 10px;
+    overflow: scroll;
     div {
       text-align: center;
       margin-bottom: 3rem;
@@ -246,7 +247,7 @@
       align-items: center;
       justify-content: center;
       font-size: 60px;
-      border: 1px rgb(129, 129, 129) solid;
+      border: 1px #808080 solid;
       border-radius: 2rem;
       text-align: center;
       background-color: white;
