@@ -98,7 +98,7 @@ const socketController = (socket, io) => {
             messageColor: "green",
         });
         updatePlayer();
-        console.log("gameStart! 진행되는 턴:", finalTurn);
+        console.log("gameStart! 진행되는 턴:", finalTurn, sockets.length);
     };
     // 게임 완료
     const gameEnd = () => {
@@ -319,7 +319,8 @@ const socketController = (socket, io) => {
                 }
                 sockets[myIndex].ready = ready;
                 updatePlayer();
-                console.log(`handleGameSubmitS: ${socket.nickname} 제출`);
+                if (ready) console.log(`handleGameSubmitS: ${socket.nickname} 제출`);
+                else console.log(`handleGameSubmitS: ${socket.nickname} 제출 취소`);
                 if (readyCount === sockets.length) {
                     console.log("gameSubmit: 모두 제출 완료!");
                     nextTurn();
