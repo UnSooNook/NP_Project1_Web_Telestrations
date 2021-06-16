@@ -317,7 +317,7 @@ const downloadURI = (uri, name) => {
     link.click();
 }
 
-async function handleDownload(e) {
+const handleDownload = (e) => {
     e.preventDefault();
     downloadBtn.disabled = true;
     const imgDiv = document.querySelector(".review__data");
@@ -331,7 +331,7 @@ async function handleDownload(e) {
     const imgName = `텔레스트레이션_${year}${month}${date}_${hour}${minute}${second}`;
     imgDiv.style.borderRadius = "0rem";
     imgDiv.style.border = "none"
-    await html2canvas(imgDiv).then((canvas) => {
+    html2canvas(imgDiv).then((canvas) => {
         let image = canvas.toDataURL();
         downloadURI(image, imgName);
     });
