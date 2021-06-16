@@ -277,6 +277,10 @@
       &:active {
         transform: scale(0.98);
       }
+      &:disabled {
+        background-color: #e67e22;
+        opacity: 0.75;
+      }
     }
   }
 }
