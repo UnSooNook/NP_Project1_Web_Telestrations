@@ -320,6 +320,7 @@ const downloadURI = (uri, name) => {
 const handleDownload = (e) => {
     e.preventDefault();
     downloadBtn.disabled = true;
+    downloadBtn.innerHTML = "다운로드 중.."
     const imgDiv = document.querySelector(".review__data");
     let today = new Date();
     const year = today.getFullYear();
@@ -338,6 +339,7 @@ const handleDownload = (e) => {
     imgDiv.style.borderRadius = "2rem";
     imgDiv.style.border = "1px #808080 solid"
     downloadBtn.disabled = false;
+    downloadBtn.innerHTML = "다운로드"
 }
 
 // 게임 종료 후 View 초기화
