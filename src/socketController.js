@@ -18,7 +18,8 @@ let readyCount = 0;
 let gameTurn = -1;
 // 게임이 끝나는 턴
 let finalTurn = -1;
-
+// 명령어 모음
+const commands = ["명령어", "만든이", "플레이어", "방장변경"];
 // 소켓 이벤트 처리
 const socketController = (socket, io) => {
     /* 통신을 위한 함수 */
@@ -64,6 +65,7 @@ const socketController = (socket, io) => {
             const myIndex = whereAmI(leader);
             if ((myIndex > -1) && (sockets[myIndex].ready)) {
                 sockets[myIndex].ready = false;
+                updateReadyCount();
             }
         }
         console.log("changeLeader", leader);
@@ -163,6 +165,102 @@ const socketController = (socket, io) => {
         }
         updatePlayer();
     };
+    // 명령어 처리
+    const handleCommand = (message, command) => {
+        const commandColor = "#34495e";
+        const errorColor = "#7f8c8d";
+        switch (command) {
+            // !명령어
+            case commands[0]:
+                if (message === `!${command}`) {
+                    let allCommands = `명령어: ${commands[1]}`;
+                    commands.forEach((com) => {
+                        if (com !== commands[0] && com !== commands[1])
+                            allCommands = `${allCommands}, ${com}`;
+                    });
+                    superBroadcast(events.newMessage,  {
+                        message: allCommands,
+                        messageColor: commandColor
+                    });
+                } else {
+                    sendTo(socket.id, events.newMessage,  {
+                        message: `사용법: !${command}`,
+                        messageColor: errorColor
+                    });
+                }
+                break;
+            // !만든이
+            case commands[1]:
+                if (message === `!${command}`) {
+                    superBroadcast(events.newMessage,  {
+                        message: "만든이: 운수눅 (<a href='https://github.com/UnSooNook' target='_blank'>Github</a>)",
+                        messageColor: commandColor
+                    });
+                } else {
+                    sendTo(socket.id, events.newMessage,  {
+                        message: `사용법: !${command}`,
+                        messageColor: errorColor
+                    });
+                }
+                break;
+            // !플레이어
+            case commands[2]:
+                if (message === `!${command}`) {
+                    let allPlayers = `플레이어(${sockets.length}): ${sockets[0].nickname}`;
+                    sockets.forEach((player) => {
+                        if (player.nickname !== sockets[0].nickname)
+                            allPlayers = `${allPlayers}, ${player.nickname}`;
+                    });
+                    superBroadcast(events.newMessage,  {
+                        message: allPlayers,
+                        messageColor: commandColor
+                    });
+                } else {
+                    sendTo(socket.id, events.newMessage,  {
+                        message: `사용법: !${command}`,
+                        messageColor: errorColor
+                    });
+                }
+                break;
+            // 방장변경
+            case commands[3]:
+                if (socket.leader) {
+                    if (message.split(" ").length === 2) {
+                        const myIndex = whereAmI(socket.id);
+                        const newLeader = message.split(" ")[1];
+                        let leaderID = null;
+                        const leaderIndex = sockets.find((player) => {
+                            if (newLeader === player.nickname) {
+                                leaderID = player.id;
+                                return true;
+                            }
+                        });
+                        if (leaderIndex) {
+                            sockets[myIndex].leader = false;
+                            socket.leader = false;
+                            changeLeader(leaderID);
+                            updatePlayer();
+                        }
+                        else {
+                            sendTo(socket.id, events.newMessage,  {
+                                message: `${newLeader}가 없습니다.`,
+                                messageColor: errorColor
+                            });
+                        }
+                    } else {
+                        sendTo(socket.id, events.newMessage,  {
+                            message: `사용법: !${command} [플레이어]`,
+                            messageColor: errorColor
+                        });
+                    }
+                } else {
+                    sendTo(socket.id, events.newMessage,  {
+                        message: `방장이 아닙니다!`,
+                        messageColor: errorColor
+                    });
+                }
+        }
+    };
 
     /* 소캣 이벤트 처리 함수 */
     // 플레이어가 접속할 때 관리 및 알림 처리 함수
@@ -226,6 +324,11 @@ const socketController = (socket, io) => {
             messageColor,
         });
         console.log(`sendMessage ${socket.nickname}: ${message}`);
+        // 명령어 처리
+        commands.forEach((command) => {
+            if (message.split(" ")[0] === `!${command}`)
+                handleCommand(message, command);
+        });
     };
     // 방장이 변경될 때 서버의 방장 소캣에 알림 처리 함수
     const handleLeaderConfirmS = ({}) => {

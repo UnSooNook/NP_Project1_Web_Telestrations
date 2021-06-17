@@ -32,9 +32,11 @@ export const shootChat = ({ name, nameColor, message, messageColor }) => {
         nickname.innerText = `${name}: `;
         nickname.style.color = nameColor;
         messageDiv.append(nickname);
+        chat.innerText = `${message}`;
     }
+    else
+        chat.innerHTML = `${message}`;
     // name이 없는 경우 (message) 형식
-    chat.innerText = `${message}`;
     chat.style.color = messageColor;
     messageDiv.append(chat);
     chatListView.appendChild(messageDiv);
