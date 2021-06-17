@@ -378,10 +378,17 @@ const socketController = (socket, io) => {
             } else {
                 ready = false;
                 // 게임 시작 방장에게 불가능 채팅 알림
-                sendTo(leader, events.serverMessage, {
-                    message: `모든 플레이어가 준비하지 않아 게임을 시작할 수 없습니다.`,
-                    messageColor: "red",
-                });
+                if (sockets.length === 1) {
+                    sendTo(leader, events.serverMessage, {
+                        message: `왜 안되지? 앗 나 혼자구나...`,
+                        messageColor: "red",
+                    });
+                } else {
+                    sendTo(leader, events.serverMessage, {
+                        message: `모든 플레이어가 준비하지 않아 게임을 시작할 수 없습니다.`,
+                        messageColor: "red",
+                    });
+                }
                 console.log("lobbyReady: game start fail...");
             }
         }
