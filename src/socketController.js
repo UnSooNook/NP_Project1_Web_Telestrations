@@ -19,7 +19,7 @@ let gameTurn = -1;
 // 게임이 끝나는 턴
 let finalTurn = -1;
 // 명령어 모음
-const commands = ["명령어", "만든이", "플레이어", "방장변경"];
+const commands = ["명령어", "만든이", "플레이어", "방장변경", "셔플", "닉변경"];
 // 소켓 이벤트 처리
 const socketController = (socket, io) => {
     /* 통신을 위한 함수 */
@@ -259,6 +259,62 @@ const socketController = (socket, io) => {
                         messageColor: errorColor
                     });
                 }
+                break;
+            // 셔플
+            case commands[4]:
+                if (socket.leader) {
+                    if (message === `!${command}`) {
+                        sockets.sort(() => Math.random() - 0.5);
+                        superBroadcast(events.newMessage,  {
+                            message: "순서가 섞였습니다! 자신의 순서를 확인해주세요.",
+                            messageColor: commandColor
+                        });
+                        updatePlayer();
+                    } else {
+                        sendTo(socket.id, events.newMessage,  {
+                            message: `사용법: !${command}`,
+                            messageColor: errorColor
+                        });
+                    }
+                } else {
+                    sendTo(socket.id, events.newMessage,  {
+                        message: `방장이 아닙니다!`,
+                        messageColor: errorColor
+                    });
+                }
+                break;
+            // 닉변경
+            case commands[5]:
+                if (message.split(" ").length === 2) {
+                    const prevNickname = socket.nickname;
+                    const newNickname = message.split(" ")[1];
+                    const isAlreadyUsed = sockets.find((player) => {
+                        if (newNickname === player.nickname)
+                            return true;
+                    });
+                    if (isAlreadyUsed) {
+                        sendTo(socket.id, events.newMessage,  {
+                            message: `닉네임 '${newNickname}'이(가) 이미 사용중입니다.`,
+                            messageColor: errorColor
+                        });
+                    }
+                    else {
+                        const myIndex = whereAmI(socket.id);
+                        sockets[myIndex].nickname = newNickname;
+                        socket.nickname = newNickname;
+                        superBroadcast(events.newMessage,  {
+                            message: `${prevNickname}님이 ${newNickname}(으)로 변경되었습니다.`,
+                            messageColor: commandColor
+                        });
+                        updatePlayer();
+                    }
+                } else {
+                    sendTo(socket.id, events.newMessage,  {
+                        message: `사용법: !${command} [닉네임]`,
+                        messageColor: errorColor
+                    });
+                }
+                break;
         }
     };
 

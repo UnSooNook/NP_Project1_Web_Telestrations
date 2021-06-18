@@ -1,10 +1,12 @@
-import { handleNewMessage, handleServerMessage } from "./chat";
+import { enableChat, handleNewMessage, handleServerMessage } from "./chat";
 import { handleDrawThis, handleGameEnd, handleGameStart, handleGuessThis, handleNextTurn, handleTerminateGame, handleTerminateGameNotif, handleUpdatePage } from "./gameManager";
 import { handleByePlayer, handleHelloPlayer } from "./logIn";
 import { handleUpdatePlayer, handleLeaderNotif } from "./players";
 
 // 내 정보 관리
 let socket = null;
+// 로그인 실패 시 변수
+let logInFail = false;
 
 // 내 소켓 리턴
 export const getMySocket = () => {
@@ -14,6 +16,8 @@ export const getMySocket = () => {
 // 내 소켓 정보 업데이트
 export const updateMySocket = ( aSocket ) => {
 	if (aSocket) {
+		if (socket.nickname !== aSocket.nickname)
+			localStorage.setItem("nickname", aSocket.nickname);
 		socket.nickname = aSocket.nickname;
 		socket.ready = aSocket.ready;
 		socket.leader = aSocket.leader;
@@ -21,7 +25,12 @@ export const updateMySocket = ( aSocket ) => {
 	}
 	else {
 		// TODO: 로그인 실패 시
-		console.log("A game has been playing. Try Again Later~");
+		if (!logInFail) {
+			alert("게임이 진행중입니다. 다시 시도하세요!");
+			console.log("A game has been playing. Try Again Later~");
+			logInFail = true;
+			enableChat(false);
+		}
 	}
 };
 

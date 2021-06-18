@@ -34,6 +34,7 @@ const handleLogInSubmit = (e) => {
     e.preventDefault();
     const input = loginForm.querySelector("input");
     const { value } = input;
+    value = value.replace(" ", "");
     input.value = "";
     // 닉네임 Local Storage에 저장
     localStorage.setItem(NICKNAME, value);
