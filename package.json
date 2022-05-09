@@ -7,7 +7,9 @@
   "scripts": {
     "dev:server": "nodemon --exec babel-node src/server --ignore assets/ --ignore src/static/",
     "dev:assets": "gulp watchFiles",
-    "build": "nodemon --exec babel-node src/server"
+    "build": "nodemon --exec babel-node src/server",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "repository": {
     "type": "git",
@@ -18,7 +20,8 @@
   "bugs": {
     "url": "https://github.com/UnSooNook/NP_Project1_Web_Telestrations/issues"
   },
-  "homepage": "https://github.com/UnSooNook/NP_Project1_Web_Telestrations#readme",
+  // "homepage": "https://github.com/UnSooNook/NP_Project1_Web_Telestrations#readme",
+  "homepage": "http://UnSooNook.github.io/NP_Project1_Web_Telestrations",
   "dependencies": {
     "@babel/preset-env": "^7.14.4",
     "babelify": "^10.0.0",
